@@ -60,6 +60,7 @@ test('submits the first event immediatelly, and not the next ones', () => {
 
 test('submits events when interval is reached, if there are events', () => {
     // Stub the interval constant, so that we don't have to wait too long on this test.
+    const previousInterval = constants.EVENTS_PING_INTERVAL;
     constants.EVENTS_PING_INTERVAL = 3 * 1000; // 3s
 
     const storage = new Storage();
@@ -83,6 +84,9 @@ test('submits events when interval is reached, if there are events', () => {
         // Check that events storage was cleared
         expect(storage._events.length).toBe(0);
     }, constants.EVENTS_PING_INTERVAL)
+
+    // Reset interval so as not to interfere with other tests
+    constants.EVENTS_PING_INTERVAL = previousInterval;
 });
 
 test('submits events when limit is reached', () => {
