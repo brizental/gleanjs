@@ -4,7 +4,7 @@
   "description": "Pronounced (glinjas)",
   "main": "index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest --no-watchman"
   },
   "repository": {
     "type": "git",
