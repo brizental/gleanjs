@@ -1,0 +1,25 @@
+{
+  "name": "glean",
+  "version": "0.0.1",
+  "description": "Pronounced (glinjas)",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/brizental/gleanjs.git"
+  },
+  "keywords": [
+    "telemetry"
+  ],
+  "author": "The Glean Team <glean-team@mozilla.com>",
+  "license": "MPL-2.0",
+  "bugs": {
+    "url": "https://github.com/brizental/gleanjs/issues"
+  },
+  "homepage": "https://github.com/brizental/gleanjs#readme",
+  "devDependencies": {
+    "jest": "^26.4.2"
+  }
+}
