@@ -46,7 +46,7 @@ const EVENT_STORAGE_KEY = "gleanEvents"
 /**
  * The maximum number of events to hold until it's time to flush.
  */
-const MAX_EVENTS = 10
+const MAX_EVENTS = 10;
 
 /**
  * The interval in which to batch and send events.
@@ -96,7 +96,6 @@ class Storage {
     _submitEvents() {
         if (this._events.length > 0) {
             // TODO: collect / submit code
-
             this._events = []
             localStorage.setItem(EVENT_STORAGE_KEY, JSON.stringify(this._events));
         }
@@ -143,9 +142,10 @@ class Storage {
         }
 
         try {
-            return JSON.parse(persisted);
-        } catch {
-            console.error("Unable to parse Glean events from storage.");
+            let parsed = JSON.parse(persisted);
+            return parsed.map(e => new RecordedEvent(e));
+        } catch(e) {
+            console.error(`Unable to parse Glean events from storage: ${e}`);
             localStorage.setItem(EVENT_STORAGE_KEY, JSON.stringify([]));
             return [];
         }

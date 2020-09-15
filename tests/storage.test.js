@@ -6,6 +6,7 @@ const { Storage, ...constants } = require('../src/storage');
 
 afterEach(() => {
     localStorage.clear();
+    jest.clearAllMocks();
 });
 
 test('localStorage and _events are kept in sync', () => {
@@ -123,23 +124,6 @@ test('gets persisted events on init', () => {
     expect(submitSpy).toHaveBeenCalledTimes(0);
     // Check that persisted events were loaded to _events
     expect(storage2._events.length).toBe(3);
-});
-
-test('submits persisted events when they are above max', () => {
-    const storage1 = new Storage();
-    // Mock the _submitEvent call so that it doesn't clear anything
-    storage1._submitEvents = () => {}
-    // Submit the max number of events to trigger submission
-    for (let i = 0; i < constants.MAX_EVENTS; i++) {
-        storage1.record(Date.now(), "category", "name", { "extra": "key" });
-    }
-
-    const storage2 = new Storage();
-    const submitSpy = jest.spyOn(storage2, "_submitEvents");
-    // Check that events were indeed submitted since they were above max
-    expect(submitSpy).toHaveBeenCalledTimes(0);
-    // Check that persisted events were cleared
-    expect(storage2._events.length).toBe(0);
 });
 
 test('correctly snapshots the storage', () => {
