@@ -6,7 +6,6 @@
 
 const Storage = require('./storage');
 
-
 class Glean {
   constructor() {
     console.log("Initialize");

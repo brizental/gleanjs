@@ -3,19 +3,23 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 const {
-    PENDING_PINGS_KEY,
+    PENDING_PINGS_STORAGE_KEY,
     CLIENT_ID_KEY,
     FIRST_RUN_DATE_KEY,
     SEQUENCE_NUMBER_STORAGE_KEY,
     LAST_SENT_DATE_KEY,
     TELEMETRY_SDK_BUILD,
 } = require("./constants");
+const upload = require("./upload");
 
 /**
  * A helper class to collect and send pings for uploading.
  */
 class PingMaker {
     constructor(appId) {
+        // Have a mirror of the pings persisted in storage
+        // so we don't need to make that trip everytime.
+        this._pings = this._getPersistedPings();
         this._appId = appId;
         // Preload all the info that doesn't change.
         this._clientId = this._getClientId();
@@ -38,7 +42,7 @@ class PingMaker {
 
     /**
      * Builds the ping payload and submission url,
-     * saves it to storage and trigges upload.
+     * saves it to storage and triggers upload.
      *
      * @param {String} events A JSON encoded string with the events payload
      *
@@ -46,22 +50,49 @@ class PingMaker {
      */
     collect(events) {
         const pingId = this._getUUIDv4();
-        const submissionUrl = `https://cors-anywhere.herokuapp.com/https://incoming.telemetry.mozilla.org/submit/${this._appId}/events/1/${pingId}`;
         const pingBody = {
             client_info: this._buildClientInfo(),
             ping_info: this._buildPingInfo(),
             events,
-        }
+        };
 
-        const currentPendingPings = localStorage.getItem(PENDING_PINGS_KEY);
-        if (!currentPendingPings) {
-            localStorage.setItem(PENDING_PINGS_KEY, JSON.stringify(ping));
-        } else {
-            localStorage.setItem(PENDING_PINGS_KEY, `${currentPendingPings}\n${JSON.stringify(ping)}`);
-        }
+        this._pushPing(pingId, pingBody);
 
         // Trigger upload for the newly collected ping
-        ping(pingId, submissionUrl, pingBody)
+        upload(pingId, pingBody);
+    }
+
+    /**
+     * Get the persisted pings from storage.
+     *
+     * @returns {String[]} The parsed array of pings found in storage or an empty array.
+     */
+    _getPersistedPings() {
+        let persisted = localStorage.getItem(PENDING_PINGS_STORAGE_KEY);
+        if (!persisted) {
+            return {};
+        }
+
+        try {
+            let parsed = JSON.parse(persisted);
+            return parsed;
+        } catch(e) {
+            console.error(`Unable to parse Glean pings from storage: ${e}`);
+            localStorage.setItem(PENDING_PINGS_STORAGE_KEY, JSON.stringify({}));
+            return {};
+        }
+    }
+
+    /**
+     * Adds a new ping to storage.
+     *
+     * @param {String} pingId The id of the ping to persist
+     * @param {Object} pingBody Te body of the ping to persist
+     */
+    _pushPing(pingId, pingBody) {
+        const pings = JSON.parse(localStorage.getItem(PENDING_PINGS_STORAGE_KEY));
+        pings[pingId] = pingBody;
+        localStorage.setItem(PENDING_PINGS_STORAGE_KEY, JSON.stringify(pings));
     }
 
     /**
@@ -242,34 +273,6 @@ class PingMaker {
         );
     }
 }
-
-// Copying this here until we have an upload module
-async function ping(pingId, submissionPath, payload) {
-    const request = {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json; charset=utf-8",
-        "Date": (new Date()).toISOString(),
-        "X-Client-Type": "Glean.JS",
-        "X-Client-Version": "0.0.1",
-        "X-Debug-ID": "ninja-dx-test-brizental"
-      },
-      body: JSON.stringify(payload),
-      mode: "cors",
-      cache: "default"
-    };
-
-    console.info(`Sending a new ping! ${pingId}\n`, JSON.stringify(request, null , 2));
-
-    fetch(submissionPath, request)
-      .then(response => console.log(`Response received: ${response.text()}`))
-      .then(data => {
-        console.log('Success:', data);
-      })
-      .catch(error => {
-        console.error('Error:', error);
-      });
-  }
 
 module.exports = PingMaker
 

@@ -13,6 +13,12 @@ Object.defineProperty(global.self, 'crypto', {
   }
 });
 
+global.fetch = jest.fn(() =>
+  Promise.resolve({
+    json: () => Promise.resolve({ }),
+  })
+);
+
 afterEach(() => {
     localStorage.clear();
     jest.clearAllMocks();
@@ -135,18 +141,18 @@ test('gets persisted events on init', () => {
     expect(storage2._events.length).toBe(3);
 });
 
-// test('correctly snapshots the storage', () => {
-//     const storage = new Storage();
-//     // Record the first event and be aware that this event will be submitted immediatelly.
-//     storage.record(Date.now(), "category", "name", { "extra": "key" });
+test('correctly snapshots the storage', () => {
+    const storage = new Storage();
+    // Record the first event and be aware that this event will be submitted immediatelly.
+    storage.record(Date.now(), "category", "name", { "extra": "key" });
 
-//     // Record some events, so that we have something to persist when it is time
-//     storage.record(Date.now(), "category", "name", { "extra": "key" });
-//     storage.record(Date.now(), "category", "name", { "extra": "key" });
-//     storage.record(Date.now(), "category", "name", { "extra": "key" });
+    // Record some events, so that we have something to persist when it is time
+    storage.record(Date.now(), "category", "name", { "extra": "key" });
 
-//     expect(JSON.stringify(storage._snapshot())).toBe("[\"{\\\"timestamp\\\":0,\\\"category\\\":\\\"category\\\",\\\"name\\\":\\\"name\\\",\\\"extra\\\":{\\\"extra\\\":\\\"key\\\"}}\",\"{\\\"timestamp\\\":0,\\\"category\\\":\\\"category\\\",\\\"name\\\":\\\"name\\\",\\\"extra\\\":{\\\"extra\\\":\\\"key\\\"}}\",\"{\\\"timestamp\\\":0,\\\"category\\\":\\\"category\\\",\\\"name\\\":\\\"name\\\",\\\"extra\\\":{\\\"extra\\\":\\\"key\\\"}}\"]");
-// });
+    expect(storage._snapshot()[0].category).toBe("category");
+    expect(storage._snapshot()[0].name).toBe("name");
+    expect(storage._snapshot()[0].extra.extra).toBe("key");
+});
 
 
 
