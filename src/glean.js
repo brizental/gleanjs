@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
- "use strict";
+"use strict";
 
 const Storage = require('./storage');
 
@@ -14,7 +14,7 @@ class Glean {
 }
 
 (function () {
-    let gleanScript = document.querySelector('[src*="../../src/glean.js"]');
+    let gleanScript = document.querySelector('[src*=glean\\.js]');
     let appId = gleanScript && gleanScript.getAttribute('app-id');
 
     let glean = new Glean(appId);
