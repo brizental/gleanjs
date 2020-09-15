@@ -22,6 +22,7 @@
   },
   "homepage": "https://github.com/brizental/gleanjs#readme",
   "devDependencies": {
+    "crypto": "^1.0.1",
     "jest": "^26.4.2",
     "webpack": "^4.44.1",
     "webpack-cli": "^3.3.12"
