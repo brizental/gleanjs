@@ -101,7 +101,7 @@ class PingMaker {
     */
     _getClientId() {
         let stored = localStorage.getItem(CLIENT_ID_KEY);
-        if (isNaN(stored)) {
+        if (!stored) {
             let newClientId = this._getUUIDv4();
             localStorage.setItem(CLIENT_ID_KEY, newClientId);
             return newClientId;
