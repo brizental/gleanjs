@@ -2,7 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-const { Storage, ...constants } = require('../src/storage');
+const Storage = require('../src/storage');
+const constants = require ('../src/constants');
 
 afterEach(() => {
     localStorage.clear();
@@ -23,7 +24,7 @@ test('localStorage and _events are kept in sync', () => {
         }
     }
     const storage = new Storage();
-    const submitSpy = jest.spyOn(storage, "_submitEvents");
+    const submitSpy = jest.spyOn(storage, "_collectEvents");
     // Check that initial state is cleared for both storages
     expect(storage._events.length).toBe(0);
     expect(getLocalStorageEvents()).toBe(null);
@@ -47,7 +48,7 @@ test('localStorage and _events are kept in sync', () => {
 
 test('submits the first event immediatelly, and not the next ones', () => {
     const storage = new Storage();
-    const submitSpy = jest.spyOn(storage, "_submitEvents");
+    const submitSpy = jest.spyOn(storage, "_collectEvents");
     // Record three events, but only one of this should be immediatelly submitted
     storage.record(Date.now(), "category", "name", { "extra": "key" });
     storage.record(Date.now(), "category", "name", { "extra": "key" });
@@ -66,10 +67,10 @@ test('submits events when interval is reached, if there are events', () => {
 
     const storage = new Storage();
     // Record the first event before setting up the spy,
-    // because it will trigger a _submitEvents that we don't care about
+    // because it will trigger a _collectEvents that we don't care about
     storage.record(Date.now(), "category", "name", { "extra": "key" });
 
-    const submitSpy = jest.spyOn(storage, "_submitEvents");
+    const submitSpy = jest.spyOn(storage, "_collectEvents");
     // Record some events, so that we have something to submit when it is time
     storage.record(Date.now(), "category", "name", { "extra": "key" });
     storage.record(Date.now(), "category", "name", { "extra": "key" });
@@ -93,10 +94,10 @@ test('submits events when interval is reached, if there are events', () => {
 test('submits events when limit is reached', () => {
     const storage = new Storage();
     // Record the first event before setting up the spy,
-    // because it will trigger a _submitEvents that we don't care about
+    // because it will trigger a _collectEvents that we don't care about
     storage.record(Date.now(), "category", "name", { "extra": "key" });
 
-    const submitSpy = jest.spyOn(storage, "_submitEvents");
+    const submitSpy = jest.spyOn(storage, "_collectEvents");
     // Submit the max number of events to trigger submission
     for (let i = 0; i < constants.MAX_EVENTS; i++) {
         storage.record(Date.now(), "category", "name", { "extra": "key" });
@@ -119,7 +120,7 @@ test('gets persisted events on init', () => {
     storage1.record(Date.now(), "category", "name", { "extra": "key" });
 
     const storage2 = new Storage();
-    const submitSpy = jest.spyOn(storage2, "_submitEvents");
+    const submitSpy = jest.spyOn(storage2, "_collectEvents");
     // Check that nothing was submitted, we are not at max
     expect(submitSpy).toHaveBeenCalledTimes(0);
     // Check that persisted events were loaded to _events
