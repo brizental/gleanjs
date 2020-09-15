@@ -8,21 +8,26 @@ const Storage = require('./storage');
 
 
 class Glean {
-  constructor(appId) {
-    this._eventStorage = new Storage(appId)
-  }
-}
-
-(function () {
+  constructor() {
+    console.log('instantiating!?')
     let gleanScript = document.querySelector('[src*=glean\\.js]');
     let appId = gleanScript && gleanScript.getAttribute('app-id');
 
-    let glean = new Glean(appId);
+    this._eventStorage = new Storage(appId);
+  }
+}
+
+let glean = new Glean();
+
+module.exports = glean;
+
+(function () {
     window.addEventListener('load', () => {
         // Record an event on load,
         // this should go through all the hoops to store, collect and upload.
 
-        // TODO: Shouldn't need to call this directly.
-        glean._eventStorage.record(Date.now(), "window", "onload", { "what": "it-works" })
+        const Event = require('./private/EventMetricType');
+        let e = new Event();
+        e.record();
     });
 })();
