@@ -2,13 +2,14 @@
 <html>
 <meta name="Glean.JS simple example" content="long" charset="UTF-8">
 <head>
-  <script async defer src="../../dist/glean.js" app-id="glean-js-tmp"></script>
-  <script async defer src="metrics.js"></script>
+  <!-- TODO: Make the calls below async, this should be a blocker for prod -->
+  <script src="../../dist/glean.js" app-id="glean-js-tmp"></script>
+  <script src="metrics.js"></script>
   <title>Glean.JS test page</title>
 </head>
 <body>
   <p> Some interesting and relevant text.
-    <button>Click me</button>
+    <button onClick="javascript:GleanMetrics.test.record();">Click me</button>
   </p>
 </body>
 </html>

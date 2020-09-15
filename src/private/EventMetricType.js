@@ -5,14 +5,22 @@
 const glean = require('../glean');
 
 class EventMetricType {
-  constructor(id) {
-    // TODO
+  constructor(category, name) {
+    this.category = category;
+    this.name = name;
   }
 
-  record(extra) {
-    // TODO
-    glean._eventStorage.record(Date.now(), "some", "name", { "what": "it-works" });
+  async record(extra) {
+    glean._eventStorage.record(Date.now(), this.category, this.name, extra);
   }
 }
 
 module.exports = EventMetricType;
+
+// Test
+if (window
+  && (typeof window.GleanJS === "undefined"
+  || typeof window.GleanJS.EventMetricType === "undefined")) {
+  window.GleanJSTypes = (window.GleanJSTypes || {});
+  window.GleanJSTypes.EventMetricType = EventMetricType;
+}
