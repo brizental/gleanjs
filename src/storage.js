@@ -2,6 +2,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+const { EVENT_STORAGE_KEY, MAX_EVENTS, EVENTS_PING_INTERVAL } = require("./constants");
+const PingMaker = require("./ping_maker");
+
 /**
  * Represents the recorded data for a single event.
  */
@@ -29,46 +32,37 @@ class RecordedEvent {
      * @returns {String} A JSON encoded string representing the serialized event.
      */
     serializeRelative(timestampOffset) {
-        return JSON.stringify({
+        return {
             timestamp: this.timestamp - timestampOffset,
             category: this.category,
             name: this.name,
             extra: this.extra
-        });
+        };
     }
 }
 
-/**
- * The key to store glean events on localStorage.
- */
-const EVENT_STORAGE_KEY = "gleanEvents"
-
-/**
- * The maximum number of events to hold until it's time to flush.
- */
-const MAX_EVENTS = 10;
-
-/**
- * The interval in which to batch and send events.
- */
-const EVENTS_PING_INTERVAL = 60 * 1000; // 5s
-
 class Storage {
     /**
-     * Creates a new Storage.
+     * Creates a new storage.
+     *
+     * @param {String} appId The app id where this instance of Glean is running
      */
-    constructor() {
+    constructor(appId) {
+        // Create an instance of the pingMaker to collect event when necessary.
+        this._pingMaker = new PingMaker(appId);
+        // Have a mirror of the events persisted in localStorage
+        // so we don't need to make that trip everytime.
         this._events = this._getPersistedEvents();
         // The first event we get will be sent immediatelly,
         // other will be sent when MAX_EVENTS is reached or when we reach the end of an interval.
         this._atFirstEvent = true;
         // Set up an interval to send evenst periodically
         // TODO: Make sure using setInterval is not a terrible idea
-        this._interval = setInterval(this._submitEvents, EVENTS_PING_INTERVAL);
+        this._interval = setInterval(this._collectEvents, EVENTS_PING_INTERVAL);
 
         // If persisted events have reached limit, submit them
         if (this._events.length >= MAX_EVENTS) {
-            this._submitEvents();
+            this._collectEvents();
         }
     }
 
@@ -84,18 +78,20 @@ class Storage {
         this._pushEvent(new RecordedEvent(timestamp, category, name, extra));
 
         if (this._atFirstEvent) {
-            this._submitEvents();
+            this._collectEvents();
             this._atFirstEvent = false;
         }
 
     }
 
     /**
-     * Submits currently stored events for uploading and clears storage.
+     * Collects currently stored events for uploading and clears storage.
      */
-    _submitEvents() {
-        if (this._events.length > 0) {
-            // TODO: collect / submit code
+    _collectEvents() {
+        if (this._events && this._events.length > 0) {
+            // Do the actual collection
+            this._pingMaker.collect(this._snapshot())
+            // Clear stores
             this._events = []
             localStorage.setItem(EVENT_STORAGE_KEY, JSON.stringify(this._events));
         }
@@ -104,7 +100,7 @@ class Storage {
     /**
      * Gets a snapshot of the current events.
      *
-     * @returns {String} A JSON encoded string representing all events stored.
+     * @returns {Object} An representing all events stored, with timestamps relative to the first event.
      */
     _snapshot() {
         let snapshot = [];
@@ -112,7 +108,7 @@ class Storage {
         for (const event of this._events) {
             snapshot.push(event.serializeRelative(firstTimestamp));
         }
-        return JSON.stringify(snapshot);
+        return snapshot;
     }
 
     /**
@@ -126,7 +122,7 @@ class Storage {
         localStorage.setItem(EVENT_STORAGE_KEY, JSON.stringify(this._events));
 
         if (this._events.length >= MAX_EVENTS) {
-            this._submitEvents();
+            this._collectEvents();
         }
     }
 
@@ -152,10 +148,4 @@ class Storage {
     }
 }
 
-module.exports = {
-    Storage,
-    // Constants exported for testing
-    EVENT_STORAGE_KEY,
-    EVENTS_PING_INTERVAL,
-    MAX_EVENTS
-}
+module.exports = Storage
