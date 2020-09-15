@@ -2,9 +2,11 @@
   "name": "glean",
   "version": "0.0.1",
   "description": "Pronounced (glinjas)",
-  "main": "index.js",
+  "private": true,
   "scripts": {
-    "test": "jest --no-watchman"
+    "test": "jest --no-watchman",
+    "build": "webpack --config webpack.config.js --mode production",
+    "dev": "webpack --watch --config webpack.config.js --mode development"
   },
   "repository": {
     "type": "git",
@@ -20,6 +22,8 @@
   },
   "homepage": "https://github.com/brizental/gleanjs#readme",
   "devDependencies": {
-    "jest": "^26.4.2"
+    "jest": "^26.4.2",
+    "webpack": "^4.44.1",
+    "webpack-cli": "^3.3.12"
   }
 }

@@ -8,8 +8,20 @@ Pronounced (glinjas)
 npm install
 ```
 
+# Developing
+
+```bash
+npm run dev
+```
+
 # Testing
 
 ```bash
 npm test
+```
+
+# Building
+
+```bash
+npm run build
 ```
