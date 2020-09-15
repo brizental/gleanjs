@@ -32,12 +32,12 @@ class RecordedEvent {
      * @returns {String} A JSON encoded string representing the serialized event.
      */
     serializeRelative(timestampOffset) {
-        return JSON.stringify({
+        return {
             timestamp: this.timestamp - timestampOffset,
             category: this.category,
             name: this.name,
             extra: this.extra
-        });
+        };
     }
 }
 
@@ -90,7 +90,7 @@ class Storage {
     _collectEvents() {
         if (this._events && this._events.length > 0) {
             // Do the actual collection
-            this._pingMaker.collect(this._events)
+            this._pingMaker.collect(this._snapshot())
             // Clear stores
             this._events = []
             localStorage.setItem(EVENT_STORAGE_KEY, JSON.stringify(this._events));
@@ -100,7 +100,7 @@ class Storage {
     /**
      * Gets a snapshot of the current events.
      *
-     * @returns {String} A JSON encoded string representing all events stored.
+     * @returns {Object} An representing all events stored, with timestamps relative to the first event.
      */
     _snapshot() {
         let snapshot = [];
@@ -108,7 +108,7 @@ class Storage {
         for (const event of this._events) {
             snapshot.push(event.serializeRelative(firstTimestamp));
         }
-        return JSON.stringify(snapshot);
+        return snapshot;
     }
 
     /**

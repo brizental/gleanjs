@@ -23,6 +23,6 @@ class Glean {
         // this should go through all the hoops to store, collect and upload.
 
         // TODO: Shouldn't need to call this directly.
-        glean._eventStorage.record(Date.now(), "window", "onload", { "what?": "it works!" })
+        glean._eventStorage.record(Date.now(), "window", "onload", { "what": "it-works" })
     });
 })();

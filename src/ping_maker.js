@@ -50,9 +50,7 @@ class PingMaker {
         const pingBody = {
             client_info: this._buildClientInfo(),
             ping_info: this._buildPingInfo(),
-            metrics: {
-                events,
-            }
+            events,
         }
 
         const currentPendingPings = localStorage.getItem(PENDING_PINGS_KEY);
@@ -102,8 +100,8 @@ class PingMaker {
      * @returns {String} The stored client_id.
     */
     _getClientId() {
-        let stored = parseInt(localStorage.getItem(CLIENT_ID_KEY));
-        if (stored.isNaN()) {
+        let stored = localStorage.getItem(CLIENT_ID_KEY);
+        if (isNaN(stored)) {
             let newClientId = this._getUUIDv4();
             localStorage.setItem(CLIENT_ID_KEY, newClientId);
             return newClientId;
@@ -119,8 +117,8 @@ class PingMaker {
      * @returns {String} The stored first run date.
     */
     _getFirstRunDate() {
-        let stored = new Date(Date.parse(localStorage.getItem(FIRST_RUN_DATE_KEY)));
-        if (stored.isNaN()) {
+        let stored = localStorage.getItem(FIRST_RUN_DATE_KEY);
+        if (!stored) {
             let firstRunDate = (new Date()).toISOString();
             localStorage.setItem(FIRST_RUN_DATE_KEY, firstRunDate);
             return firstRunDate;
@@ -137,7 +135,7 @@ class PingMaker {
     _getNextSequenceNumber() {
         let stored = parseInt(localStorage.getItem(SEQUENCE_NUMBER_STORAGE_KEY));
         let nextSequenceNumber;
-        if (!stored || typeof stored !== "number") {
+        if (isNaN(stored)) {
             nextSequenceNumber = 1;
         } else {
             nextSequenceNumber = stored + 1;
@@ -153,12 +151,9 @@ class PingMaker {
      * @returns {Object} An object holding start and end times.
      */
     _getStartEndTimes() {
-        let lastSentDate = new Date(Date.parse(localStorage.getItem(LAST_SENT_DATE_KEY)));
-        let startTime;
-        if (!lastSentDate) {
+        let startTime = localStorage.getItem(LAST_SENT_DATE_KEY);
+        if (!startTime) {
             startTime = (new Date()).toISOString();
-        } else {
-            startTime = lastSentDate.toISOString();
         }
 
         let endTime = (new Date()).toISOString();
