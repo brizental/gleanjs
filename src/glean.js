@@ -12,6 +12,10 @@ class Glean {
     console.log("Initialize");
     let gleanScript = document.querySelector('[src*=glean\\.js]');
     let appId = gleanScript && gleanScript.getAttribute('app-id');
+    if (appId == null || appId.length == 0) {
+      console.error("Unable to initialize Glean.JS: no app id provided.");
+      return;
+    }
 
     this._eventStorage = new Storage(appId);
   }
