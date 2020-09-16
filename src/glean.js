@@ -20,13 +20,3 @@ class Glean {
 let glean = new Glean();
 
 module.exports = glean;
-
-(function () {
-    window.addEventListener('load', () => {
-        // Record an event on load,
-        // this should go through all the hoops to store, collect and upload.
-        const EventMetricType = require('./private/EventMetricType');
-        let e = new EventMetricType("testcat", "load");
-        e.record();
-    });
-})();
