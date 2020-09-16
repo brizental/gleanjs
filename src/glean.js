@@ -21,6 +21,4 @@ class Glean {
   }
 }
 
-let glean = new Glean();
-
-module.exports = glean;
+module.exports = new Glean();
