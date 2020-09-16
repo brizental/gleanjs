@@ -91,7 +91,7 @@ class PingMaker {
      */
     _pushPing(pingId, pingBody) {
         const pings = JSON.parse(localStorage.getItem(PENDING_PINGS_STORAGE_KEY));
-        pings[pingId] = pingBody;
+        this._pings[pingId] = pingBody;
         localStorage.setItem(PENDING_PINGS_STORAGE_KEY, JSON.stringify(pings));
     }
 

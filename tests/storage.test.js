@@ -16,6 +16,7 @@ Object.defineProperty(global.self, 'crypto', {
 global.fetch = jest.fn(() =>
   Promise.resolve({
     json: () => Promise.resolve({ }),
+    status: 200,
   })
 );
 
