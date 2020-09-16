@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "description": "Pronounced (glinjas)",
   "private": true,
+  "main": "dist/glean.js",
   "scripts": {
     "test": "jest --no-watchman",
     "build": "webpack --config webpack.config.js --mode production",

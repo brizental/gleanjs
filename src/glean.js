@@ -9,7 +9,6 @@ const Storage = require('./storage');
 
 class Glean {
   constructor() {
-    console.log("Initialize");
     let gleanScript = document.querySelector('[src*=glean\\.js]');
     let appId = gleanScript && gleanScript.getAttribute('app-id');
     if (appId == null || appId.length == 0) {
@@ -21,6 +20,4 @@ class Glean {
   }
 }
 
-let glean = new Glean();
-
-module.exports = glean;
+module.exports = new Glean();

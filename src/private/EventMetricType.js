@@ -16,11 +16,3 @@ class EventMetricType {
 }
 
 module.exports = EventMetricType;
-
-// Test
-if (window
-  && (typeof window.GleanJS === "undefined"
-  || typeof window.GleanJS.EventMetricType === "undefined")) {
-  window.GleanJSTypes = (window.GleanJSTypes || {});
-  window.GleanJSTypes.EventMetricType = EventMetricType;
-}
