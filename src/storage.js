@@ -50,7 +50,7 @@ class Storage {
     constructor(appId) {
         // Create an instance of the pingMaker to collect event when necessary.
         this._pingMaker = new PingMaker(appId);
-        // Have a mirror of the events persisted in localStorage
+        // Have a mirror of the events persisted in storage
         // so we don't need to make that trip everytime.
         this._events = this._getPersistedEvents();
         // The first event we get will be sent immediatelly,

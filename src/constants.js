@@ -26,7 +26,7 @@ module.exports = {
     /**
      * The key to store the pending ping payloads.
      */
-    PENDING_PINGS_KEY: "gleanPendingPings",
+    PENDING_PINGS_STORAGE_KEY: "gleanPendingPings",
     
     /**
      * The key to store glean events on localStorage.
@@ -42,7 +42,7 @@ module.exports = {
      * The interval in which to batch and send events.
      */
     EVENTS_PING_INTERVAL: 60 * 1000, // 5s
-    
+
     /**
      * The current version of this SDK,
      * this must by in sync with the version in the package.json.
@@ -50,4 +50,14 @@ module.exports = {
      * TODO: Find a better way to get this.
      */
     TELEMETRY_SDK_BUILD: "0.0.1",
+
+    /**
+     * The telemetry endpoint to send data to.
+     */
+    TELEMETRY_ENDPOINT: "https://incoming.telemetry.mozilla.org/",
+
+    /**
+     * The amount of time to wait before retrying on a recoverable error.
+     */
+    RECOVERABLE_UPLOAD_ERROR_TIMEOUT: 60 * 1000, // 1min
 }
