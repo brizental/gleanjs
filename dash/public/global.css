@@ -1,0 +1,301 @@
+@font-face {
+  font-family: "Metropolis";
+  src: url("metropolis/Metropolis-Black.woff2") format("woff2"),
+    url("metropolis/Metropolis-Black.woff") format("woff");
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Metropolis";
+  src: url("metropolis/Metropolis-BlackItalic.woff2") format("woff2"),
+    url("metropolis/Metropolis-BlackItalic.woff") format("woff");
+  font-weight: 900;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Metropolis";
+  src: url("metropolis/Metropolis-ExtraBold.woff2") format("woff2"),
+    url("metropolis/Metropolis-ExtraBold.woff") format("woff");
+  font-weight: 800;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Metropolis";
+  src: url("metropolis/Metropolis-ExtraBoldItalic.woff2") format("woff2"),
+    url("metropolis/Metropolis-ExtraBoldItalic.woff") format("woff");
+  font-weight: 800;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Metropolis";
+  src: url("metropolis/Metropolis-Bold.woff2") format("woff2"),
+    url("metropolis/Metropolis-Bold.woff") format("woff");
+  font-weight: 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Metropolis";
+  src: url("metropolis/Metropolis-BoldItalic.woff2") format("woff2"),
+    url("metropolis/Metropolis-BoldItalic.woff") format("woff");
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Metropolis";
+  src: url("metropolis/Metropolis-SemiBold.woff2") format("woff2"),
+    url("metropolis/Metropolis-SemiBold.woff") format("woff");
+  font-weight: 600;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Metropolis";
+  src: url("metropolis/Metropolis-SemiBoldItalic.woff2") format("woff2"),
+    url("metropolis/Metropolis-SemiBoldItalic.woff") format("woff");
+  font-weight: 600;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Metropolis";
+  src: url("metropolis/Metropolis-Medium.woff2") format("woff2"),
+    url("metropolis/Metropolis-Medium.woff") format("woff");
+  font-weight: 500;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Metropolis";
+  src: url("metropolis/Metropolis-MediumItalic.woff2") format("woff2"),
+    url("metropolis/Metropolis-MediumItalic.woff") format("woff");
+  font-weight: 500;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Metropolis";
+  src: url("metropolis/Metropolis-Regular.woff2") format("woff2"),
+    url("metropolis/Metropolis-Regular.woff") format("woff");
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Metropolis";
+  src: url("metropolis/Metropolis-RegularItalic.woff2") format("woff2"),
+    url("metropolis/Metropolis-RegularItalic.woff") format("woff");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Metropolis";
+  src: url("metropolis/Metropolis-Light.woff2") format("woff2"),
+    url("metropolis/Metropolis-Light.woff") format("woff");
+  font-weight: 300;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Metropolis";
+  src: url("metropolis/Metropolis-LightItalic.woff2") format("woff2"),
+    url("metropolis/Metropolis-LightItalic.woff") format("woff");
+  font-weight: 300;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Metropolis";
+  src: url("metropolis/Metropolis-ExtraLight.woff2") format("woff2"),
+    url("metropolis/Metropolis-ExtraLight.woff") format("woff");
+  font-weight: 200;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Metropolis";
+  src: url("metropolis/Metropolis-ExtraLightItalic.woff2") format("woff2"),
+    url("metropolis/Metropolis-ExtraLightItalic.woff") format("woff");
+  font-weight: 200;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Metropolis";
+  src: url("metropolis/Metropolis-Thin.woff2") format("woff2"),
+    url("metropolis/Metropolis-Thin.woff") format("woff");
+  font-weight: 100;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Metropolis";
+  src: url("metropolis/Metropolis-ThinItalic.woff2") format("woff2"),
+    url("metropolis/Metropolis-ThinItalic.woff") format("woff");
+  font-weight: 100;
+  font-style: italic;
+  font-display: swap;
+}
+
+html,
+body {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+body {
+  color: #333;
+  margin: 0;
+  box-sizing: border-box;
+
+  display: grid;
+  grid-template-rows: max-content auto max-content;
+  height: 100vh;
+
+  /**
+   * This font-family stack is meant to match that of create-react-app.
+   *
+   * On Linux, Firefox consults a third-party tool called fontconfig when
+   * deciding which fonts to display. fontconfig maps the names of proprietary
+   * fonts (e.g., Helvetica) to similar but non-identical free fonts (e.g.,
+   * Nimbus Sans), which Firefox uses instead.[1][2]
+   *
+   * This particular mapping can be a problem. Nimbus Sans is not a great
+   * replacement for Helvetica because it has an em-box which leaves a large
+   * amount of empty space below the baseline. This causes text not to appear
+   * vertically-centered when it should.
+   *
+   * fontconfig does not map the name Helvetica Neue to Nimbus Sans, so it's a
+   * better choice than Helvetica here. Arial has a reasonable replacement and
+   * the default sans-serif font is also fine.
+   *
+   * [1] https://nolanlawson.com/2020/05/02/customizing-fonts-in-firefox-on-linux/
+   * [2] https://bugzilla.mozilla.org/show_bug.cgi?id=553580
+   */
+  --font--main: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+    "Segoe UI Symbol";
+  --font--display: "Metropolis";
+  --font--viz: var(--font--main);
+  font-family: var(--font--main);
+}
+
+.gafc {
+  display: grid;
+  align-items: center;
+  grid-auto-flow: column;
+  grid-gap: 1rem;
+}
+
+body > header {
+  position: sticky;
+  top: 0;
+  background-color: white;
+  color: hsla(217, 40%, 25%);
+  box-shadow: 0px 0.25rem 0.25rem rgba(0, 0, 0, 0.075);
+  min-height: 3rem;
+  display: grid;
+  align-items: center;
+  grid-template-columns: max-content auto;
+  padding: 0px 1rem;
+}
+
+body > header > h1 {
+  font-family: var(--font--display);
+  font-size: 1.25rem;
+  margin: 0;
+  padding: 0;
+}
+
+body > header > h1 > span {
+  font-weight: normal;
+}
+
+a {
+  color: rgb(0, 100, 200);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+a:visited {
+  color: rgb(0, 80, 160);
+}
+
+label {
+  display: block;
+}
+
+input,
+button,
+select,
+textarea {
+  font-family: inherit;
+  font-size: inherit;
+  padding: 0.4em;
+  margin: 0 0 0.5em 0;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 2px;
+}
+
+input:disabled {
+  color: #ccc;
+}
+
+button {
+  color: #333;
+  background-color: #f4f4f4;
+  outline: none;
+}
+
+button:disabled {
+  color: #999;
+}
+
+button:not(:disabled):active {
+  background-color: #ddd;
+}
+
+button:focus {
+  border-color: #666;
+}
+
+main {
+  max-width: 1200px;
+  margin: auto;
+}
+
+main > header {
+  padding: 3rem 0px;
+}
+
+main > header > div:first-child {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  color: hsl(217, 10%, 40%);
+}
+
+main > header > h2 {
+  padding: 0px;
+  margin: 0px;
+  font-family: var(--font--display);
+}
