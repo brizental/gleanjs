@@ -25,8 +25,7 @@ class Glean {
     }
 
     if (appId == null || appId.length == 0) {
-      console.error("Unable to initialize Glean.JS: no app id provided.");
-      return;
+      appId = "glean-js-qml";
     }
 
     this._eventStorage = new EventStorage(appId);
