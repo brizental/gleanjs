@@ -5,13 +5,26 @@
 const path = require('path');
 
 module.exports = {
-  entry: './src/index.js',
-  output: {
-    filename: 'glean.js',
-    path: path.resolve(__dirname, 'dist'),
-    library: 'Glean',
-    // This config makes the Glean object a global `var`.
-    // See: https://webpack.js.org/guides/author-libraries/
-    libraryTarget: 'var'
-  }
+    entry: './src/index.js',
+    output: {
+        filename: 'glean.js',
+        path: path.resolve(__dirname, 'dist'),
+        library: 'Glean',
+        // This config makes the Glean object a global `var`.
+        // See: https://webpack.js.org/guides/author-libraries/
+        libraryTarget: 'var'
+    },
+    optimization: {
+        minimize: false
+    },
+    module: {
+        rules: [{
+            use: {
+                loader: 'babel-loader',
+                options: {
+                    presets: ['@babel/preset-env']
+                }
+            }
+        }]
+    }
 };

@@ -9,11 +9,10 @@ const Storage = require('./storage');
 class Glean {
   constructor() {
     console.log("Initialize");
-    let gleanScript = document.querySelector('[src*=glean\\.js]');
+    let gleanScript = global.document && global.document.querySelector('[src*=glean\\.js]');
     let appId = gleanScript && gleanScript.getAttribute('app-id');
     if (appId == null || appId.length == 0) {
-      console.error("Unable to initialize Glean.JS: no app id provided.");
-      return;
+      appId = "glean-js-qml";
     }
 
     this._eventStorage = new Storage(appId);
