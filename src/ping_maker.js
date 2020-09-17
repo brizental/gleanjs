@@ -90,9 +90,8 @@ class PingMaker {
      * @param {Object} pingBody Te body of the ping to persist
      */
     _pushPing(pingId, pingBody) {
-        const pings = JSON.parse(localStorage.getItem(PENDING_PINGS_STORAGE_KEY));
         this._pings[pingId] = pingBody;
-        localStorage.setItem(PENDING_PINGS_STORAGE_KEY, JSON.stringify(pings));
+        localStorage.setItem(PENDING_PINGS_STORAGE_KEY, JSON.stringify(this._pings));
     }
 
     /**
@@ -112,7 +111,7 @@ class PingMaker {
      * Builds the client info section of the ping.
      */
     _buildClientInfo() {
-        return {
+        let info = {
             app_build: "Unknown",
             app_display_version: "Unknown",
             architecture: "Unknown",
@@ -122,7 +121,17 @@ class PingMaker {
             os_version: "Unknown",
             telemetry_sdk_build: TELEMETRY_SDK_BUILD,
             locale: this.locale
+        };
+
+        // Attempt to fetch the addon version, if we're a
+        // webextension.
+        var browser =
+            (typeof browser !== "undefined") ? browser : (typeof chrome !== "undefined" ? chrome : null);
+        if (browser) {
+            info.app_display_version = browser.runtime.getManifest().version;
         }
+
+        return info;
     }
 
     /**

@@ -17,7 +17,6 @@ async function upload(pingId, payload) {
             "Date": (new Date()).toISOString(),
             "X-Client-Type": "Glean.JS",
             "X-Client-Version": "0.0.1",
-            // "X-Debug-ID": "ninja-dx-test-brizental"
         },
         body: JSON.stringify(payload),
         mode: "cors",
@@ -33,10 +32,11 @@ async function upload(pingId, payload) {
                 case response.status >= 200 && response.status < 300:
                     console.info(`Ping submitted successfully ${pingId}`);
                     _deletePersistedPing(pingId);
+                    break;
                 // Unrecoverable error case
                 case response.status >= 400 && response.status < 500:
                     console.error(`Unrecoverable error while submitting ping ${pingId}. Status code: ${response.status}`);
-                    _onUploadUnrecoverableError();
+                    break;
                 // Recorevable error case
                 default:
                     console.warn(`Recoverable error while submitting ping ${pingId}. Status code: ${response.status}`);
@@ -50,11 +50,13 @@ async function upload(pingId, payload) {
         });
 }
 
+// TODO: This should really go in a shared "Storage" module used by both ping_maker and
+// upload.
 function _deletePersistedPing(pingId) {
     console.info(`Deleting ping ${pingId} from storage`);
-    const pings = JSON.parse(localStorage.getItem(PENDING_PINGS_STORAGE_KEY));
+    let pings = JSON.parse(localStorage.getItem(PENDING_PINGS_STORAGE_KEY)) || {};
     delete pings[pingId];
-    localStorage.setItem(PENDING_PINGS_STORAGE_KEY, pings);
+    localStorage.setItem(PENDING_PINGS_STORAGE_KEY, JSON.stringify(pings));
 }
 
 module.exports = upload
