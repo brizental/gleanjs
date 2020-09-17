@@ -55,7 +55,7 @@ class PingMaker {
      * @param {Object[]} events An array of event objects
      * @param {String} sessionId The id of the current session
      *
-     * @returns {String} The ping payloaxd (adding this here just until we got the uploader)
+     * @returns {String} The ping payload (adding this here just until we got the uploader)
      */
     collect(events, sessionId) {
         const pingId = UUIDv4();
@@ -319,4 +319,3 @@ class PingMaker {
 }
 
 module.exports = PingMaker
-
