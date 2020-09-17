@@ -11,6 +11,7 @@ const {
     TELEMETRY_SDK_BUILD,
 } = require("./constants");
 const upload = require("./upload");
+const { UUIDv4 } = require("./utils");
 
 /**
  * A helper class to collect and send pings for uploading.
@@ -27,9 +28,15 @@ class PingMaker {
 
         const { os, browser, deviceType } = this._getPlatformInfo();
         this._os = os;
-        // TODO: Where should we add these in the client_info for now?
         this._browser = browser;
         this._deviceType = deviceType;
+
+        const setMetricsThatRequireWindow = () => {
+            this._referrer = document && document.referrer;
+            this._pageTitle = document && document.title;
+            this._pagePath = window && window.location.pathname;
+        }
+        window && window.addEventListener('load', setMetricsThatRequireWindow);
 
         // Locale could actually change between pings,
         // but I think we can ignore that for now.
@@ -44,28 +51,61 @@ class PingMaker {
      * Builds the ping payload and submission url,
      * saves it to storage and triggers upload.
      *
-     * @param {String} events A JSON encoded string with the events payload
+     * @param {Object[]} events An array of event objects
+     * @param {String} sessionId The id of the current session
      *
      * @returns {String} The ping payload (adding this here just until we got the uploader)
      */
-    collect(events) {
-        const pingId = this._getUUIDv4();
-        const pingBody = {
-            client_info: this._buildClientInfo(),
-            ping_info: this._buildPingInfo(),
-            events,
-        };
+    collect(events, sessionId) {
+        if (events && events.length > 0) {
+            const pingId = UUIDv4();
+            console.info(`Collecting a new ping! ${pingId}`);
+            const pingBody = {
+                client_info: this._buildClientInfo(),
+                ping_info: this._buildPingInfo(),
+                events,
+                metrics: this._buildMetricsSection(sessionId),
+            };
+    
+            this._pushPing(pingId, pingBody);
+    
+            // Trigger upload for the newly collected ping
+            upload(pingId, pingBody);
+        } else {
+            console.info("Attempted to collect a new ping but there are no events to collect at this moment. Bailing out.")
+        }
+    }
 
-        this._pushPing(pingId, pingBody);
+    /**
+     * Adds a metrics section to the pings with the additional web app specific metrics.
+     */
+    _buildMetricsSection(sessionId) {
+        let baseMetrics =  {
+                uuid: {
+                    "session.sessionId": sessionId
+                },
+                string: {
+                    "platform.browser": this._browser,
+                    "platform.deviceType": this._deviceType,
+                }
+        }
 
-        // Trigger upload for the newly collected ping
-        upload(pingId, pingBody);
+        if (document) {
+            baseMetrics["string"] = {
+                ...baseMetrics["string"],
+                "page.referrer": this._referrer,
+                "page.title": this._pageTitle,
+                "page.path": this._pagePath,
+            }
+        }
+
+        return baseMetrics
     }
 
     /**
      * Get the persisted pings from storage.
      *
-     * @returns {String[]} The parsed array of pings found in storage or an empty array.
+     * @returns {Object} The parsed object with pings found in storage or an empty object.
      */
     _getPersistedPings() {
         let persisted = localStorage.getItem(PENDING_PINGS_STORAGE_KEY);
@@ -75,6 +115,10 @@ class PingMaker {
 
         try {
             let parsed = JSON.parse(persisted);
+            // Hack so that we don't get invalid object here
+            if (!parsed) {
+                throw "Invalid object parsed from pending pings store";
+            }
             return parsed;
         } catch(e) {
             console.error(`Unable to parse Glean pings from storage: ${e}`);
@@ -142,7 +186,7 @@ class PingMaker {
     _getClientId() {
         let stored = localStorage.getItem(CLIENT_ID_KEY);
         if (!stored) {
-            let newClientId = this._getUUIDv4();
+            let newClientId = UUIDv4();
             localStorage.setItem(CLIENT_ID_KEY, newClientId);
             return newClientId;
         } else {
@@ -269,17 +313,6 @@ class PingMaker {
             browser: _guessBrowser(ua),
             deviceType: _guessDeviceType(ua),
         }
-    }
-
-    /**
-     * This is shamelessly copied from https://stackoverflow.com/a/2117523/261698
-     *
-     * @returns {String} A randomly generated UUIDv4.
-     */
-    _getUUIDv4() {
-        return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
-            (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
-        );
     }
 }
 

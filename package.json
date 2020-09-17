@@ -27,5 +27,8 @@
     "jest": "^26.4.2",
     "webpack": "^4.44.1",
     "webpack-cli": "^3.3.12"
+  },
+  "dependencies": {
+    "lodash.throttle": "^4.1.1"
   }
 }
