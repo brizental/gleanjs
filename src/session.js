@@ -115,9 +115,12 @@ class Session {
         console.info(`Starting a new session due to ${reason}!`);
         this._cb(this._sessionId);
 
-        localStorage.setItem(UTM_CAMPAIGN_KEY, this._getCurrentUtmCampaign());
+        let currentUtmCampaign = this._getCurrentUtmCampaign();
+        if (currentUtmCampaign) {
+            localStorage.setItem(UTM_CAMPAIGN_KEY, this._getCurrentUtmCampaign());
+        }
         this._sessionId = this._resetSessionId();
-        this._startTime = this._resetSessionStartTimee();
+        this._startTime = this._resetSessionStartTime();
         this._setTimeoutToResetOnInactivity();
     }
 

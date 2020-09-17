@@ -17,6 +17,7 @@ async function upload(pingId, payload) {
             "Date": (new Date()).toISOString(),
             "X-Client-Type": "Glean.JS",
             "X-Client-Version": "0.0.1",
+            // "X-Debug-ID": "ninja-dx-test-brizental"
         },
         body: JSON.stringify(payload),
         mode: "cors",
@@ -36,6 +37,7 @@ async function upload(pingId, payload) {
                 // Unrecoverable error case
                 case response.status >= 400 && response.status < 500:
                     console.error(`Unrecoverable error while submitting ping ${pingId}. Status code: ${response.status}`);
+                    _deletePersistedPing(pingId);
                     break;
                 // Recorevable error case
                 default:
@@ -54,9 +56,14 @@ async function upload(pingId, payload) {
 // upload.
 function _deletePersistedPing(pingId) {
     console.info(`Deleting ping ${pingId} from storage`);
-    let pings = JSON.parse(localStorage.getItem(PENDING_PINGS_STORAGE_KEY)) || {};
-    delete pings[pingId];
-    localStorage.setItem(PENDING_PINGS_STORAGE_KEY, JSON.stringify(pings));
+    try {
+        let pings = JSON.parse(localStorage.getItem(PENDING_PINGS_STORAGE_KEY));
+        delete pings[pingId];
+        localStorage.setItem(PENDING_PINGS_STORAGE_KEY, JSON.stringify(pings));
+    } catch {
+        console.error("Unable to parse pending ping storage, clearing pending pings.");
+        localStorage.setItem(PENDING_PINGS_STORAGE_KEY, JSON.stringify({}));
+    }
 }
 
 module.exports = upload

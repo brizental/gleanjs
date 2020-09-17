@@ -18,9 +18,9 @@ const { UUIDv4 } = require("./utils");
  */
 class PingMaker {
     constructor(appId) {
-        // Have a mirror of the pings persisted in storage
-        // so we don't need to make that trip everytime.
-        this._pings = this._getPersistedPings();
+        // Upload outstanding pings from the last run
+        this._uploadPersistedPings();
+
         this._appId = appId;
         // Preload all the info that doesn't change.
         this._clientId = this._getClientId();
@@ -68,7 +68,7 @@ class PingMaker {
             };
     
             this._pushPing(pingId, pingBody);
-    
+
             // Trigger upload for the newly collected ping
             upload(pingId, pingBody);
         } else {
@@ -82,20 +82,22 @@ class PingMaker {
     _buildMetricsSection(sessionId) {
         let baseMetrics =  {
                 uuid: {
-                    "session.sessionId": sessionId
+                    "session.session_id": sessionId
                 },
                 string: {
                     "platform.browser": this._browser,
-                    "platform.deviceType": this._deviceType,
+                    "platform.device_type": this._deviceType,
                 }
         }
 
         if (document) {
             baseMetrics["string"] = {
                 ...baseMetrics["string"],
-                "page.referrer": this._referrer,
-                "page.title": this._pageTitle,
-                "page.path": this._pagePath,
+                // These strings are all arbitrarily long
+                // and the Glean schema only accepts strings up to 100 characters.
+                "page.referrer": this._referrer.slice(0, 100),
+                "page.title": this._pageTitle.slice(0, 100),
+                "page.path": this._pagePath.slice(0, 100),
             }
         }
 
@@ -103,27 +105,24 @@ class PingMaker {
     }
 
     /**
-     * Get the persisted pings from storage.
-     *
-     * @returns {Object} The parsed object with pings found in storage or an empty object.
+     * Uploads the persisted pings from storage.
      */
-    _getPersistedPings() {
+    _uploadPersistedPings() {
         let persisted = localStorage.getItem(PENDING_PINGS_STORAGE_KEY);
         if (!persisted) {
-            return {};
+            // If no storage is initiated means this is the first time we are running glean.
+            localStorage.setItem(PENDING_PINGS_STORAGE_KEY, JSON.stringify({}));
+            return;
         }
 
         try {
-            let parsed = JSON.parse(persisted);
-            // Hack so that we don't get invalid object here
-            if (!parsed) {
-                throw "Invalid object parsed from pending pings store";
+            let pings = JSON.parse(persisted);
+            for (const pingId in pings) {
+                upload(pingId, pings[pingId]);
             }
-            return parsed;
         } catch(e) {
             console.error(`Unable to parse Glean pings from storage: ${e}`);
             localStorage.setItem(PENDING_PINGS_STORAGE_KEY, JSON.stringify({}));
-            return {};
         }
     }
 
@@ -134,8 +133,14 @@ class PingMaker {
      * @param {Object} pingBody Te body of the ping to persist
      */
     _pushPing(pingId, pingBody) {
-        this._pings[pingId] = pingBody;
-        localStorage.setItem(PENDING_PINGS_STORAGE_KEY, JSON.stringify(this._pings));
+        try {
+            let pings = JSON.parse(localStorage.getItem(PENDING_PINGS_STORAGE_KEY));
+            pings[pingId] = pingBody;
+            localStorage.setItem(PENDING_PINGS_STORAGE_KEY, JSON.stringify(pings));
+        } catch {
+            console.error("Unable to parse pending ping storage, clearing pending pings.");
+            localStorage.setItem(PENDING_PINGS_STORAGE_KEY, JSON.stringify({}));
+        }
     }
 
     /**

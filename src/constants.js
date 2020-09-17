@@ -56,7 +56,7 @@ module.exports = {
     /**
      * The interval in which to batch and send events.
      */
-    EVENTS_PING_INTERVAL: 60 * 1000, // 5s
+    EVENTS_PING_INTERVAL: 60 * 1000, // 1min
 
     /**
      * The current version of this SDK,
@@ -69,7 +69,7 @@ module.exports = {
     /**
      * The telemetry endpoint to send data to.
      */
-    TELEMETRY_ENDPOINT: "https://incoming.telemetry.mozilla.org/",
+    TELEMETRY_ENDPOINT: "https://cors-anywhere.herokuapp.com/https://incoming.telemetry.mozilla.org/",
 
     /**
      * The amount of time to wait before retrying on a recoverable error.
