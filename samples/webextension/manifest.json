@@ -1,0 +1,19 @@
+{
+  "description": "Glean.JS test add-on",
+  "author": "Mozilla",
+  "manifest_version": 2,
+  "name": "gleanjs-test-addon",
+  "version": "0.0.1",
+  "homepage_url": "https://github.com/brizental/gleanjs",
+
+  "permissions": [
+    "storage"
+  ],
+
+  "background": {
+    "scripts": [
+      "glean.js",
+      "background.js"
+    ]
+  }
+}
