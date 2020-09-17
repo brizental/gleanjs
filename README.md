@@ -20,6 +20,14 @@ npm run dev
 npm test
 ```
 
+## Manually testing the Webextension
+
+1. Copy the output of the build step (i.e. `glean.js`) to `samples/webextension/`. This is required as it's not possible, from the manifest file, to directly reference `../../dist/glean.js`.
+2. Load the extension in the browser (either Firefox or Chrome will work):
+
+    a. **Firefox**: in a Nightly build, go to `about:debugging`, then "This Nightly" and click on "Load Temporary Add-on". Select the `manifest.json` file. Then, by clicking "Inspect", the DevTools for the add-on will appear.
+    b. **Chrome**: go to `chrome://extensions/`, then click on "Load unpacked" and select the `samples/webextension` directory. Clicking on "Inspect views background page" will show the DevTools for the add-on.
+
 # Building
 
 ```bash
