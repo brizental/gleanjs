@@ -4,6 +4,7 @@
 
 const { EVENT_STORAGE_KEY, MAX_EVENTS, EVENTS_PING_INTERVAL } = require("./constants");
 const PingMaker = require("./ping_maker");
+const Session = require("./session");
 
 /**
  * Represents the recorded data for a single event.
@@ -48,6 +49,7 @@ class Storage {
      * @param {String} appId The app id where this instance of Glean is running
      */
     constructor(appId) {
+        this._session = new Session(this._collectEvents);
         // Create an instance of the pingMaker to collect event when necessary.
         this._pingMaker = new PingMaker(appId);
         // Have a mirror of the events persisted in storage
@@ -58,7 +60,8 @@ class Storage {
         this._atFirstEvent = true;
         // Set up an interval to send evenst periodically
         // TODO: Make sure using setInterval is not a terrible idea
-        this._interval = setInterval(this._collectEvents, EVENTS_PING_INTERVAL);
+        const collectOnInterval = () => this._collectEvents(this._session.id());
+        this._interval = setInterval(collectOnInterval, EVENTS_PING_INTERVAL);
 
         // If persisted events have reached limit, submit them
         if (this._events.length >= MAX_EVENTS) {
@@ -78,7 +81,7 @@ class Storage {
         this._pushEvent(new RecordedEvent(timestamp, category, name, extra));
 
         if (this._atFirstEvent) {
-            this._collectEvents();
+            this._collectEvents(this._session.id());
             this._atFirstEvent = false;
         }
 
@@ -87,10 +90,10 @@ class Storage {
     /**
      * Collects currently stored events for uploading and clears storage.
      */
-    _collectEvents() {
+    _collectEvents(sessionId) {
         if (this._events && this._events.length > 0) {
             // Do the actual collection
-            this._pingMaker.collect(this._snapshot())
+            this._pingMaker.collect(this._snapshot(), sessionId);
             // Clear stores
             this._events = []
             localStorage.setItem(EVENT_STORAGE_KEY, JSON.stringify(this._events));
@@ -122,7 +125,7 @@ class Storage {
         localStorage.setItem(EVENT_STORAGE_KEY, JSON.stringify(this._events));
 
         if (this._events.length >= MAX_EVENTS) {
-            this._collectEvents();
+            this._collectEvents(this._session.id());
         }
     }
 

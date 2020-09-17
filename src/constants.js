@@ -32,16 +32,31 @@ module.exports = {
      * The key to store glean events on localStorage.
      */
     EVENT_STORAGE_KEY: "gleanEvents",
-    
+
+    /**
+     * The key to store glean events on localStorage.
+     */
+    SESSION_START_KEY: "gleanSessionStart",
+
+    /**
+     * The key to store the previous `utm_campaign` seen on the URL.
+     */
+    UTM_CAMPAIGN_KEY: "gleanUtmCampaign",
+
+    /**
+     * The key to store the previous `utm_campaign` seen on the URL.
+     */
+    SESSION_ID_KEY: "gleanSessionId",
+
     /**
      * The maximum number of events to hold until it's time to flush.
      */
     MAX_EVENTS: 10,
-    
+
     /**
      * The interval in which to batch and send events.
      */
-    EVENTS_PING_INTERVAL: 60 * 1000, // 5s
+    EVENTS_PING_INTERVAL: 60 * 1000, // 1min
 
     /**
      * The current version of this SDK,
@@ -54,10 +69,15 @@ module.exports = {
     /**
      * The telemetry endpoint to send data to.
      */
-    TELEMETRY_ENDPOINT: "https://incoming.telemetry.mozilla.org/",
+    TELEMETRY_ENDPOINT: "https://cors-anywhere.herokuapp.com/https://incoming.telemetry.mozilla.org/",
 
     /**
      * The amount of time to wait before retrying on a recoverable error.
      */
     RECOVERABLE_UPLOAD_ERROR_TIMEOUT: 60 * 1000, // 1min
+
+    /**
+     * Max inactivity time a until a session is reset.
+     */
+    MAX_INACTIVITY_TIME: 30 * 60 * 1000, // 30min
 }
