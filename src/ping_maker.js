@@ -111,7 +111,7 @@ class PingMaker {
      * Builds the client info section of the ping.
      */
     _buildClientInfo() {
-        return {
+        let info = {
             app_build: "Unknown",
             app_display_version: "Unknown",
             architecture: "Unknown",
@@ -121,7 +121,16 @@ class PingMaker {
             os_version: "Unknown",
             telemetry_sdk_build: TELEMETRY_SDK_BUILD,
             locale: this.locale
+        };
+
+        // Attempt to fetch the addon version, if we're a
+        // webextension.
+        var browser = browser || chrome;
+        if (browser) {
+            info.app_display_version = browser.runtime.getManifest().version;
         }
+
+        return info;
     }
 
     /**
