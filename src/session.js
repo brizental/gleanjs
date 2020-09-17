@@ -8,8 +8,7 @@ const {
     UTM_CAMPAIGN_KEY,
     MAX_INACTIVITY_TIME,
 } = require("./constants");
-const throttle = require('lodash.throttle');
-const { UUIDv4 } = require('./utils');
+const { UUIDv4, throttle } = require('./utils');
 
 /**
  * A session class to manage the current users section and act when a session is over.
@@ -52,7 +51,7 @@ class Session {
         // I am considering activity, any click or key press on the page.
         document && document.addEventListener("click", () => this._setTimeoutToResetOnInactivity());
         document && document.addEventListener("keypress", () => this._setTimeoutToResetOnInactivity());
-        window && window.addEventListener("scroll", throttle(() => this._setTimeoutToResetOnInactivity(), 1000));
+        // window && window.addEventListener("scroll", throttle(() => this._setTimeoutToResetOnInactivity(), 1000));
     }
 
     /**
