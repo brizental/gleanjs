@@ -90,9 +90,8 @@ class PingMaker {
      * @param {Object} pingBody Te body of the ping to persist
      */
     _pushPing(pingId, pingBody) {
-        const pings = JSON.parse(localStorage.getItem(PENDING_PINGS_STORAGE_KEY));
         this._pings[pingId] = pingBody;
-        localStorage.setItem(PENDING_PINGS_STORAGE_KEY, JSON.stringify(pings));
+        localStorage.setItem(PENDING_PINGS_STORAGE_KEY, JSON.stringify(this._pings));
     }
 
     /**
