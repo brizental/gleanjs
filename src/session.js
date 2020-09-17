@@ -51,7 +51,7 @@ class Session {
         // I am considering activity, any click or key press on the page.
         document && document.addEventListener("click", () => this._setTimeoutToResetOnInactivity());
         document && document.addEventListener("keypress", () => this._setTimeoutToResetOnInactivity());
-        // window && window.addEventListener("scroll", throttle(() => this._setTimeoutToResetOnInactivity(), 1000));
+        window && window.addEventListener("scroll", throttle(() => this._setTimeoutToResetOnInactivity(), 1000));
     }
 
     /**
@@ -116,8 +116,8 @@ class Session {
         this._cb(this._sessionId);
 
         localStorage.setItem(UTM_CAMPAIGN_KEY, this._getCurrentUtmCampaign());
-        this._sessionId = this._getSessionId();
-        this._startTime = this._getSessionStartTime();
+        this._sessionId = this._resetSessionId();
+        this._startTime = this._resetSessionStartTimee();
         this._setTimeoutToResetOnInactivity();
     }
 
