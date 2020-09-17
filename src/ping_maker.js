@@ -95,9 +95,9 @@ class PingMaker {
                 ...baseMetrics["string"],
                 // These strings are all arbitrarily long
                 // and the Glean schema only accepts strings up to 100 characters.
-                "page.referrer": this._referrer.slice(0, 100),
-                "page.title": this._pageTitle.slice(0, 100),
-                "page.path": this._pagePath.slice(0, 100),
+                "page.referrer": this._referrer && this._referrer.slice(0, 100),
+                "page.title": this._pageTitle && this._pageTitle.slice(0, 100),
+                "page.path": this._pagePath && this._pagePath.slice(0, 100),
             }
         }
 
