@@ -42,7 +42,7 @@ class RecordedEvent {
     }
 }
 
-class Storage {
+class EventStorage {
     /**
      * Creates a new storage.
      *
@@ -165,4 +165,4 @@ class Storage {
     }
 }
 
-module.exports = Storage
+module.exports = EventStorage

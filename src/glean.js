@@ -4,7 +4,7 @@
 
 "use strict";
 
-const Storage = require('./storage');
+const EventStorage = require('./event_storage');
 
 class Glean {
   constructor() {
@@ -29,7 +29,7 @@ class Glean {
       return;
     }
 
-    this._eventStorage = new Storage(appId);
+    this._eventStorage = new EventStorage(appId);
   }
 }
 
