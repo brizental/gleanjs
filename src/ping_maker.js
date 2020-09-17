@@ -82,11 +82,11 @@ class PingMaker {
     _buildMetricsSection(sessionId) {
         let baseMetrics =  {
                 uuid: {
-                    "session.session_id": sessionId
+                    "glean.session.session_id": sessionId
                 },
                 string: {
-                    "platform.browser": this._browser,
-                    "platform.device_type": this._deviceType,
+                    "glean.platform.browser": this._browser,
+                    "glean.platform.device_type": this._deviceType,
                 }
         }
 
@@ -95,9 +95,9 @@ class PingMaker {
                 ...baseMetrics["string"],
                 // These strings are all arbitrarily long
                 // and the Glean schema only accepts strings up to 100 characters.
-                "page.referrer": this._referrer && this._referrer.slice(0, 100),
-                "page.title": this._pageTitle && this._pageTitle.slice(0, 100),
-                "page.path": this._pagePath && this._pagePath.slice(0, 100),
+                "glean.page.referrer": this._referrer && this._referrer.slice(0, 100),
+                "glean.page.title": this._pageTitle && this._pageTitle.slice(0, 100),
+                "glean.page.path": this._pagePath && this._pagePath.slice(0, 100),
             }
         }
 
