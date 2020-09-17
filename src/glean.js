@@ -13,11 +13,12 @@ class Glean {
     let appId = null;
     // Chrome does not define the `browser` object. Instead, it defines
     // the `chrome` object.
-    var browser = browser || chrome;
+    var browser =
+            (typeof browser !== "undefined") ? browser : (typeof chrome !== "undefined" ? chrome : null);
     if (browser) {
       console.log("Running from a webextension");
       appId = browser.runtime.id;
-    } else if (gleanScript) {
+    } else {
       console.log("Running from a web page");
       let gleanScript = document.querySelector('[src*=glean\\.js]');
       appId = gleanScript && gleanScript.getAttribute('app-id');

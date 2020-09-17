@@ -125,7 +125,8 @@ class PingMaker {
 
         // Attempt to fetch the addon version, if we're a
         // webextension.
-        var browser = browser || chrome;
+        var browser =
+            (typeof browser !== "undefined") ? browser : (typeof chrome !== "undefined" ? chrome : null);
         if (browser) {
             info.app_display_version = browser.runtime.getManifest().version;
         }
