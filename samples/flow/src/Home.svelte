@@ -38,6 +38,6 @@
   in:fly={{ duration: 300, y: 5, delay: 300 }}>
   <div>Discover great clicks at a low price.</div>
   <button on:click={() => page.set('terms')}>
-    join the ClickClick community
+    join the ClickMonkey community
   </button>
 </section>

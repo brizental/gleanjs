@@ -43,7 +43,7 @@
 
 <div id="app">
   <header>
-    <h1>ClickClick<span>.biz</span></h1>
+    <h1>ClickMonkey<span>.biz</span></h1>
   </header>
 
   <main>
@@ -58,5 +58,5 @@
     {/if}
   </main>
 
-  <footer>2020 ClickClick Group</footer>
+  <footer>2020 ClickMonkey Group</footer>
 </div>
