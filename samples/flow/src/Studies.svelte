@@ -10,7 +10,6 @@
 
   <button
     on:click={() => {
-      // instrument here!
       GleanMetrics.cmStudies.clickStudy.record();
     }}>
     Demo click study

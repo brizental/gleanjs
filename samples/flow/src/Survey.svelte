@@ -49,15 +49,15 @@
 
   <label>
     1. If you had to choose just one (I know, it's hard!), what's your favorite
-    number? <input id="fav-number" type="number" />
+    number? <input type="number" />
   </label>
 
   <button
     class="submit"
-    on:click={() => {
+    on:click={event => {
       //instrument here!
       page.set('studies');
-      let favNumber = document.getElementById("fav-number").value;
+      let favNumber = event.target.value;
       GleanMetrics.cmOnboarding.submitSurvey.record((favNumber) ? {favouriteNumber: favNumber} : null);
     }}>
     Submit
