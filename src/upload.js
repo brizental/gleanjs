@@ -18,7 +18,6 @@ async function upload(appId, pingId, payload) {
             "Date": (new Date()).toISOString(),
             "X-Client-Type": "Glean.JS",
             "X-Client-Version": "0.0.1",
-            "X-Debug-ID": "ninja-dx-test-brizental"
         },
         body: JSON.stringify(payload),
         mode: "cors",
