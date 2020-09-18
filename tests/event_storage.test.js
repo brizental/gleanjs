@@ -3,7 +3,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 const EventStorage = require('../src/event_storage');
-const constants = require ('../src/constants');
+const constants = require('../src/constants');
+const { getItem } = require('storage');
 
 // JSDOM does not support crypto yet. Let's fake it.
 const crypto = require('crypto');
@@ -21,13 +22,12 @@ global.fetch = jest.fn(() =>
 );
 
 afterEach(() => {
-    localStorage.clear();
     jest.clearAllMocks();
 });
 
 test('localStorage and _events are kept in sync', () => {
     const getLocalStorageEvents = () => {
-        const contents = localStorage.getItem(constants.EVENT_STORAGE_KEY);
+        const contents = getItem(constants.EVENT_STORAGE_KEY);
         if (contents) {
             try {
                 return JSON.parse(contents);
