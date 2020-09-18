@@ -18,10 +18,11 @@ const { UUIDv4 } = require("./utils");
  */
 class PingMaker {
     constructor(appId) {
+        this._appId = appId;
+
         // Upload outstanding pings from the last run
         this._uploadPersistedPings();
 
-        this._appId = appId;
         // Preload all the info that doesn't change.
         this._clientId = this._getClientId();
         this._firstRunDate = this._getFirstRunDate();
@@ -57,23 +58,19 @@ class PingMaker {
      * @returns {String} The ping payload (adding this here just until we got the uploader)
      */
     collect(events, sessionId) {
-        if (events && events.length > 0) {
-            const pingId = UUIDv4();
-            console.info(`Collecting a new ping! ${pingId}`);
-            const pingBody = {
-                client_info: this._buildClientInfo(),
-                ping_info: this._buildPingInfo(),
-                events,
-                metrics: this._buildMetricsSection(sessionId),
-            };
-    
-            this._pushPing(pingId, pingBody);
+        const pingId = UUIDv4();
+        console.info(`Collecting a new ping! ${pingId}`);
+        const pingBody = {
+            client_info: this._buildClientInfo(),
+            ping_info: this._buildPingInfo(),
+            events,
+            metrics: this._buildMetricsSection(sessionId),
+        };
 
-            // Trigger upload for the newly collected ping
-            upload(pingId, pingBody);
-        } else {
-            console.info("Attempted to collect a new ping but there are no events to collect at this moment. Bailing out.")
-        }
+        this._pushPing(pingId, pingBody);
+
+        // Trigger upload for the newly collected ping
+        upload(this._appId, pingId, pingBody);
     }
 
     /**
@@ -118,7 +115,7 @@ class PingMaker {
         try {
             let pings = JSON.parse(persisted);
             for (const pingId in pings) {
-                upload(pingId, pings[pingId]);
+                upload(this._appId, pingId, pings[pingId]);
             }
         } catch(e) {
             console.error(`Unable to parse Glean pings from storage: ${e}`);
@@ -322,4 +319,3 @@ class PingMaker {
 }
 
 module.exports = PingMaker
-

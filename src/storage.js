@@ -58,15 +58,27 @@ class Storage {
         // The first event we get will be sent immediatelly,
         // other will be sent when MAX_EVENTS is reached or when we reach the end of an interval.
         this._atFirstEvent = true;
+
+        const collectEvents = () => {
+            this._collectEvents(this._session.id())
+        };
         // Set up an interval to send evenst periodically
         // TODO: Make sure using setInterval is not a terrible idea
-        const collectOnInterval = () => this._collectEvents(this._session.id());
-        this._interval = setInterval(collectOnInterval, EVENTS_PING_INTERVAL);
+        this._interval = setInterval(collectEvents, EVENTS_PING_INTERVAL);
 
         // If persisted events have reached limit, submit them
         if (this._events.length >= MAX_EVENTS) {
-            this._collectEvents();
+            collectEvents()
         }
+
+        // If the page unloads we want to collect any events
+        // in case the user never comes back to this page.
+        //
+        // TODO: even though this *usually* (focus on the usually, sometimes is doesn't)
+        // succeeds in uploading the ping after the page in unloaded,
+        // it never succeeds on deleting the ping that was uploaded (if it was successfully uploaded).
+        // It also doesn't deal with upload errors.
+        window && window.addEventListener("beforeunload", collectEvents)
     }
 
     /**
@@ -97,6 +109,8 @@ class Storage {
             // Clear stores
             this._events = []
             localStorage.setItem(EVENT_STORAGE_KEY, JSON.stringify(this._events));
+        } else {
+            console.info("Attempted to collect a new ping but there are no events to collect at this moment. Bailing out.")
         }
     }
 

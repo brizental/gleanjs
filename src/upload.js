@@ -8,8 +8,8 @@ const {
     RECOVERABLE_UPLOAD_ERROR_TIMEOUT
 } = require("./constants");
 
-async function upload(pingId, payload) {
-    const submissionUrl = `${TELEMETRY_ENDPOINT}submit/${this._appId}/events/1/${pingId}`;
+async function upload(appId, pingId, payload) {
+    const submissionUrl = `${TELEMETRY_ENDPOINT}submit/${appId}/events/1/${pingId}`;
     const request = {
         method: "POST",
         headers: {
@@ -17,11 +17,12 @@ async function upload(pingId, payload) {
             "Date": (new Date()).toISOString(),
             "X-Client-Type": "Glean.JS",
             "X-Client-Version": "0.0.1",
-            // "X-Debug-ID": "ninja-dx-test-brizental"
+            "X-Debug-ID": "ninja-dx-test-brizental"
         },
         body: JSON.stringify(payload),
         mode: "cors",
-        cache: "default"
+        cache: "default",
+        keepalive: true
     };
 
     console.info(`Sending a new ping! ${pingId}\n`, JSON.stringify(request, null , 2));
@@ -42,13 +43,13 @@ async function upload(pingId, payload) {
                 // Recorevable error case
                 default:
                     console.warn(`Recoverable error while submitting ping ${pingId}. Status code: ${response.status}`);
-                    setTimeout(() => upload(pingId, payload), RECOVERABLE_UPLOAD_ERROR_TIMEOUT);
+                    setTimeout(() => upload(appId, pingId, payload), RECOVERABLE_UPLOAD_ERROR_TIMEOUT);
             }
         })
         .catch(error => {
             // These are always recoverable since they are errors while trying to make the request.
             console.warn(`Recoverable error while submitting ping ${pingId}. Unable to perform request: ${error}`);
-            setTimeout(() => upload(pingId, payload), RECOVERABLE_UPLOAD_ERROR_TIMEOUT);
+            setTimeout(() => upload(appId, pingId, payload), RECOVERABLE_UPLOAD_ERROR_TIMEOUT);
         });
 }
 
