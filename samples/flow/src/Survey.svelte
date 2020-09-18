@@ -1,4 +1,5 @@
 <script>
+  import GleanMetrics from './metrics.js';
   import { getContext } from "svelte";
   import { fly } from "svelte/transition";
   const page = getContext("page");
@@ -41,6 +42,7 @@
     on:click={() => {
       //instrument here!
       page.set('studies');
+      GleanMetrics.cmOnboarding.skipSurvey.record();
     }}>
     skip for now
   </button>
@@ -52,9 +54,11 @@
 
   <button
     class="submit"
-    on:click={() => {
+    on:click={event => {
       //instrument here!
       page.set('studies');
+      let favNumber = event.target.value;
+      GleanMetrics.cmOnboarding.submitSurvey.record((favNumber) ? {favouriteNumber: favNumber} : null);
     }}>
     Submit
   </button>

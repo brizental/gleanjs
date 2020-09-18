@@ -1,4 +1,5 @@
 <script>
+  import GleanMetrics from './metrics.js';
   import { getContext } from "svelte";
   import { fly } from "svelte/transition";
   const page = getContext("page");
@@ -37,7 +38,7 @@
   out:fly={{ duration: 300, y: 5 }}
   in:fly={{ duration: 300, y: 5, delay: 300 }}>
   <div>Discover great clicks at a low price.</div>
-  <button on:click={() => page.set('terms')}>
+  <button on:click={() => { page.set('terms'); GleanMetrics.cmOnboarding.joinCommunity.record();}}>
     join the ClickMonkey community
   </button>
 </section>

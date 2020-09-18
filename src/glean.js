@@ -20,7 +20,7 @@ class Glean {
       appId = browser.runtime.id;
     } else {
       console.log("Running from a web page");
-      let gleanScript = document.querySelector('[src*=glean\\.js]');
+      let gleanScript = document.getElementById("glean-js");
       appId = gleanScript && gleanScript.getAttribute('app-id');
     }
 
