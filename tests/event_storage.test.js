@@ -42,7 +42,7 @@ test('localStorage and _events are kept in sync', () => {
     const submitSpy = jest.spyOn(storage, "_collectEvents");
     // Check that initial state is cleared for both storages
     expect(storage._events.length).toBe(0);
-    expect(getLocalStorageEvents()).toBe(null);
+    expect(getLocalStorageEvents().length).toBe(0);
 
     // Record the first event and be aware that this event will be submitted immediatelly.
     storage.record(Date.now(), "category", "name", { "extra": "key" });

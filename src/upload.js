@@ -7,6 +7,7 @@ const {
     PENDING_PINGS_STORAGE_KEY,
     RECOVERABLE_UPLOAD_ERROR_TIMEOUT
 } = require("./constants");
+const { transformItemWithDefault } = require("./utils");
 
 async function upload(appId, pingId, payload) {
     const submissionUrl = `${TELEMETRY_ENDPOINT}submit/${appId}/events/1/${pingId}`;
@@ -53,18 +54,13 @@ async function upload(appId, pingId, payload) {
         });
 }
 
-// TODO: This should really go in a shared "Storage" module used by both ping_maker and
-// upload.
 function _deletePersistedPing(pingId) {
     console.info(`Deleting ping ${pingId} from storage`);
-    try {
-        let pings = JSON.parse(localStorage.getItem(PENDING_PINGS_STORAGE_KEY));
+    transformItemWithDefault(PENDING_PINGS_STORAGE_KEY, JSON.stringify({}), value => {
+        let pings = JSON.parse(value);
         delete pings[pingId];
-        localStorage.setItem(PENDING_PINGS_STORAGE_KEY, JSON.stringify(pings));
-    } catch {
-        console.error("Unable to parse pending ping storage, clearing pending pings.");
-        localStorage.setItem(PENDING_PINGS_STORAGE_KEY, JSON.stringify({}));
-    }
+        return JSON.stringify(pings);
+    });
 }
 
 module.exports = upload
