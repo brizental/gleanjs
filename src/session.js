@@ -8,7 +8,8 @@ const {
     UTM_CAMPAIGN_KEY,
     MAX_INACTIVITY_TIME,
 } = require("./constants");
-const { UUIDv4, throttle } = require('./utils');
+const { UUIDv4, throttle, getItemWithDefault, updateItemWithDefault } = require('./utils');
+const { setItem, getItem } = require("storage");
 
 /**
  * A session class to manage the current users section and act when a session is over.
@@ -117,7 +118,7 @@ class Session {
 
         let currentUtmCampaign = this._getCurrentUtmCampaign();
         if (currentUtmCampaign) {
-            localStorage.setItem(UTM_CAMPAIGN_KEY, this._getCurrentUtmCampaign());
+            setItem(UTM_CAMPAIGN_KEY, currentUtmCampaign);
         }
         this._sessionId = this._resetSessionId();
         this._startTime = this._resetSessionStartTime();
@@ -129,12 +130,7 @@ class Session {
      * in case nothing is stored will save current timestamp and store before returning.
      */
     _getSessionStartTime() {
-        const stored = parseInt(localStorage.getItem(SESSION_START_KEY));
-        if (isNaN(stored)) {
-            return this._resetSessionStartTime();
-        } else {
-            return stored
-        }
+        return getItemWithDefault(SESSION_START_KEY, Date.now());
     }
 
     /**
@@ -144,7 +140,7 @@ class Session {
      */
     _resetSessionStartTime() {
         const newStartTime = Date.now();
-        localStorage.setItem(SESSION_START_KEY, newStartTime);
+        setItem(SESSION_START_KEY, newStartTime);
         return newStartTime;
     }
 
@@ -152,7 +148,7 @@ class Session {
      * Gets the last seen `utm_campaign` from storage.
      */
     _getLastUtmCampaign() {
-        return localStorage.getItem(UTM_CAMPAIGN_KEY);
+        return getItem(UTM_CAMPAIGN_KEY);
     }
 
     /**
@@ -162,19 +158,14 @@ class Session {
      */
     _getCurrentUtmCampaign() {
         const currentUrl = new URL(window.location.href);
-        return currentUrl.searchParams.get("utm_campaign")
+        return currentUrl.searchParams.get("utm_campaign");
     }
 
     /**
      * Gets the sessionId from storage.
      */
     _getSessionId() {
-        const stored = localStorage.getItem(SESSION_ID_KEY);
-        if (!stored) {
-            return this._resetSessionId();
-        } else {
-            return stored
-        }
+        return getItemWithDefault(SESSION_ID_KEY, UUIDv4());
     }
 
     /**
@@ -182,7 +173,7 @@ class Session {
      */
     _resetSessionId() {
         const newSessionId = UUIDv4();
-        localStorage.setItem(SESSION_ID_KEY, newSessionId);
+        setItem(SESSION_ID_KEY, newSessionId);
         return newSessionId;
     }
 }

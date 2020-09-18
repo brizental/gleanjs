@@ -11,7 +11,8 @@ const {
     TELEMETRY_SDK_BUILD,
 } = require("./constants");
 const upload = require("./upload");
-const { UUIDv4 } = require("./utils");
+const { UUIDv4, transformItemWithDefault, getItemWithDefault } = require("./utils");
+const { setItem } = require("storage");
 
 /**
  * A helper class to collect and send pings for uploading.
@@ -102,25 +103,16 @@ class PingMaker {
     }
 
     /**
-     * Uploads the persisted pings from storage.
+     * Uploads the persisted pings from storage and clears storage.
      */
     _uploadPersistedPings() {
-        let persisted = localStorage.getItem(PENDING_PINGS_STORAGE_KEY);
-        if (!persisted) {
-            // If no storage is initiated means this is the first time we are running glean.
-            localStorage.setItem(PENDING_PINGS_STORAGE_KEY, JSON.stringify({}));
-            return;
-        }
-
-        try {
-            let pings = JSON.parse(persisted);
+        transformItemWithDefault(PENDING_PINGS_STORAGE_KEY, JSON.stringify({}), value => {
+            let pings = JSON.parse(value);
             for (const pingId in pings) {
                 upload(this._appId, pingId, pings[pingId]);
             }
-        } catch(e) {
-            console.error(`Unable to parse Glean pings from storage: ${e}`);
-            localStorage.setItem(PENDING_PINGS_STORAGE_KEY, JSON.stringify({}));
-        }
+            return JSON.stringify({});
+        })
     }
 
     /**
@@ -130,14 +122,11 @@ class PingMaker {
      * @param {Object} pingBody Te body of the ping to persist
      */
     _pushPing(pingId, pingBody) {
-        try {
-            let pings = JSON.parse(localStorage.getItem(PENDING_PINGS_STORAGE_KEY));
+        transformItemWithDefault(PENDING_PINGS_STORAGE_KEY, JSON.stringify({}), value => {
+            let pings = JSON.parse(value);
             pings[pingId] = pingBody;
-            localStorage.setItem(PENDING_PINGS_STORAGE_KEY, JSON.stringify(pings));
-        } catch {
-            console.error("Unable to parse pending ping storage, clearing pending pings.");
-            localStorage.setItem(PENDING_PINGS_STORAGE_KEY, JSON.stringify({}));
-        }
+            return JSON.stringify(pings);
+        });
     }
 
     /**
@@ -186,15 +175,7 @@ class PingMaker {
      * @returns {String} The stored client_id.
     */
     _getClientId() {
-        let stored = localStorage.getItem(CLIENT_ID_KEY);
-        if (!stored) {
-            let newClientId = UUIDv4();
-            localStorage.setItem(CLIENT_ID_KEY, newClientId);
-            return newClientId;
-        } else {
-            // TODO: Validate that the stored value is a UUIDv4.
-            return stored;
-        }
+        return getItemWithDefault(CLIENT_ID_KEY, UUIDv4());
     }
 
     /**
@@ -203,31 +184,20 @@ class PingMaker {
      * @returns {String} The stored first run date.
     */
     _getFirstRunDate() {
-        let stored = localStorage.getItem(FIRST_RUN_DATE_KEY);
-        if (!stored) {
-            let firstRunDate = (new Date()).toISOString();
-            localStorage.setItem(FIRST_RUN_DATE_KEY, firstRunDate);
-            return firstRunDate;
-        } else {
-            return stored;
-        }
+        return getItemWithDefault(FIRST_RUN_DATE_KEY, (new Date()).toISOString());
     }
 
     /**
-     * Calculates the next sequence number and updates localStorage with it.
+     * Calculates the next sequence number and updates storage with it.
      *
      * @returns {Number} The next sequence number.
     */
     _getNextSequenceNumber() {
-        let stored = parseInt(localStorage.getItem(SEQUENCE_NUMBER_STORAGE_KEY));
-        let nextSequenceNumber;
-        if (isNaN(stored)) {
-            nextSequenceNumber = 1;
-        } else {
-            nextSequenceNumber = stored + 1;
-        }
-        localStorage.setItem(SEQUENCE_NUMBER_STORAGE_KEY, nextSequenceNumber);
-        return nextSequenceNumber;
+        return transformItemWithDefault(SEQUENCE_NUMBER_STORAGE_KEY, 1, value => {
+            const lastSeqNumber = parseInt(value);
+            if (isNaN(lastSeqNumber)) throw "Stored sequence number is not a number!"
+            return lastSeqNumber + 1
+        });
     }
 
     /**
@@ -237,13 +207,9 @@ class PingMaker {
      * @returns {Object} An object holding start and end times.
      */
     _getStartEndTimes() {
-        let startTime = localStorage.getItem(LAST_SENT_DATE_KEY);
-        if (!startTime) {
-            startTime = (new Date()).toISOString();
-        }
-
+        let startTime = getItemWithDefault(LAST_SENT_DATE_KEY, (new Date()).toISOString());
         let endTime = (new Date()).toISOString();
-        localStorage.setItem(LAST_SENT_DATE_KEY, endTime);
+        setItem(LAST_SENT_DATE_KEY, endTime);
         return {
             startTime,
             endTime,

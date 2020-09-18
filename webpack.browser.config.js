@@ -16,5 +16,10 @@ module.exports = {
   },
   // Do not use `eval` for source maps in dev, so that the
   // generated output could be used.
-  devtool: "source-map"
+  devtool: "source-map",
+  resolve: {
+    alias: {
+      storage$: path.resolve(__dirname, 'src/storage/browser.js'),
+    }
+  }
 };

@@ -10,9 +10,19 @@ npm install
 
 # Developing
 
+When targetting browsers, use:
+
 ```bash
 npm run dev
 ```
+
+When targetting QML, use:
+
+```bash
+npm run dev.qml
+```
+
+The main difference between these two is the code that talks to the underlying storage implementation. QML does not have access to localStorage.
 
 # Testing
 
@@ -30,6 +40,16 @@ npm test
 
 # Building
 
+When targetting browsers, use:
+
 ```bash
 npm run build
 ```
+
+When targetting QML, use:
+
+```bash
+npm run build.qml
+```
+
+The main difference between these two is the code that talks to the underlying storage implementation. QML does not have access to localStorage.

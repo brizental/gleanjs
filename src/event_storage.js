@@ -6,6 +6,9 @@ const { EVENT_STORAGE_KEY, MAX_EVENTS, EVENTS_PING_INTERVAL } = require("./const
 const PingMaker = require("./ping_maker");
 const Session = require("./session");
 
+const { setItem } = require("storage");
+const { getItemWithDefault } = require("./utils");
+
 /**
  * Represents the recorded data for a single event.
  */
@@ -42,7 +45,7 @@ class RecordedEvent {
     }
 }
 
-class Storage {
+class EventStorage {
     /**
      * Creates a new storage.
      *
@@ -108,7 +111,7 @@ class Storage {
             this._pingMaker.collect(this._snapshot(), sessionId);
             // Clear stores
             this._events = []
-            localStorage.setItem(EVENT_STORAGE_KEY, JSON.stringify(this._events));
+            setItem(EVENT_STORAGE_KEY, JSON.stringify(this._events));
         } else {
             console.info("Attempted to collect a new ping but there are no events to collect at this moment. Bailing out.")
         }
@@ -136,7 +139,7 @@ class Storage {
      */
     _pushEvent(event) {
         this._events.push(event);
-        localStorage.setItem(EVENT_STORAGE_KEY, JSON.stringify(this._events));
+        setItem(EVENT_STORAGE_KEY, JSON.stringify(this._events));
 
         if (this._events.length >= MAX_EVENTS) {
             this._collectEvents(this._session.id());
@@ -149,20 +152,16 @@ class Storage {
      * @returns {String[]} The parsed array of events found in localStorage or an empty array.
      */
     _getPersistedEvents() {
-        let persisted = localStorage.getItem(EVENT_STORAGE_KEY);
-        if (!persisted) {
-            return [];
-        }
-
         try {
-            let parsed = JSON.parse(persisted);
+            const persisted = getItemWithDefault(EVENT_STORAGE_KEY, JSON.stringify([]));
+            const parsed = JSON.parse(persisted);
             return parsed.map(e => new RecordedEvent(e));
         } catch(e) {
             console.error(`Unable to parse Glean events from storage: ${e}`);
-            localStorage.setItem(EVENT_STORAGE_KEY, JSON.stringify([]));
+            setItem(EVENT_STORAGE_KEY, JSON.stringify([]));
             return [];
         }
     }
 }
 
-module.exports = Storage
+module.exports = EventStorage
