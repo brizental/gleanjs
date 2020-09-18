@@ -2,8 +2,9 @@
   "name": "svelte-app",
   "version": "1.0.0",
   "scripts": {
-    "build": "rollup -c",
-    "dev": "rollup -c -w",
+    "copy": "cp -r ../../dist public/dist",
+    "build": "npm run copy && rollup -c",
+    "dev": "npm run copy && rollup -c -w",
     "start": "sirv public"
   },
   "devDependencies": {
