@@ -1,4 +1,5 @@
 <script>
+  import GleanMetrics from './metrics.js';
   import { fly } from "svelte/transition";
 </script>
 
@@ -10,6 +11,7 @@
   <button
     on:click={() => {
       // instrument here!
+      GleanMetrics.cmStudies.clickStudy.record();
     }}>
     Demo click study
   </button>

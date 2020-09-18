@@ -1,4 +1,5 @@
 <script>
+  import GleanMetrics from './metrics.js';
   import { getContext } from "svelte";
   import { fly } from "svelte/transition";
   const page = getContext("page");
@@ -41,13 +42,14 @@
     on:click={() => {
       //instrument here!
       page.set('studies');
+      GleanMetrics.cmOnboarding.skipSurvey.record();
     }}>
     skip for now
   </button>
 
   <label>
     1. If you had to choose just one (I know, it's hard!), what's your favorite
-    number? <input type="number" />
+    number? <input id="fav-number" type="number" />
   </label>
 
   <button
@@ -55,6 +57,8 @@
     on:click={() => {
       //instrument here!
       page.set('studies');
+      let favNumber = document.getElementById("fav-number").value;
+      GleanMetrics.cmOnboarding.submitSurvey.record((favNumber) ? {favouriteNumber: favNumber} : null);
     }}>
     Submit
   </button>

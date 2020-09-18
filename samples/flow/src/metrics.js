@@ -3,6 +3,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 export default {
-  test: new Glean._MetricTypes.EventMetricType("testcat", "click"),
+  cmOnboarding : {
+    joinCommunity: new Glean._MetricTypes.EventMetricType("cm.onboarding", "join_community"),
+    acceptTerms: new Glean._MetricTypes.EventMetricType("cm.onboarding", "accept_terms"),
+    skipSurvey: new Glean._MetricTypes.EventMetricType("cm.onboarding", "skip_survey"),
+    submitSurvey: new Glean._MetricTypes.EventMetricType("cm.onboarding", "submit_survey"),
+  },
+  cmStudies : {
+    clickStudy: new Glean._MetricTypes.EventMetricType("cm.studies", "click_study"),
+  },
 };
 

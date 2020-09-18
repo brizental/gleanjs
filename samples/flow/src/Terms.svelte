@@ -1,4 +1,5 @@
 <script>
+  import GleanMetrics from './metrics.js';
   import { getContext } from "svelte";
   import { fly } from "svelte/transition";
   const page = getContext("page");
@@ -35,7 +36,7 @@
       using the Site and you must discontinue use immediately.
     </p>
   </div>
-  <button on:click={() => page.set('survey')}>
+  <button on:click={() => {page.set('survey'); GleanMetrics.cmOnboarding.acceptTerms.record();}}>
     I Consent, Get me to the Clicks
   </button>
 </section>

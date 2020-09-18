@@ -38,7 +38,7 @@
   out:fly={{ duration: 300, y: 5 }}
   in:fly={{ duration: 300, y: 5, delay: 300 }}>
   <div>Discover great clicks at a low price.</div>
-  <button on:click={() => { page.set('terms'); GleanMetrics.test.record();}}>
+  <button on:click={() => { page.set('terms'); GleanMetrics.cmOnboarding.joinCommunity.record();}}>
     join the ClickMonkey community
   </button>
 </section>
