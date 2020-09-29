@@ -8,8 +8,8 @@
     "test": "jest --no-watchman",
     "build": "webpack --config webpack.browser.config.js --mode production",
     "dev": "webpack --watch --config webpack.browser.config.js --mode development",
-    "build.qml": "webpack --config webpack.qml.config.js --mode production",
-    "dev.qml": "webpack --watch --config webpack.qml.config.js --mode development"
+    "dev.qml": "webpack --watch --config  webpack.qml.config.js --mode development",
+    "build.qml": "webpack --config webpack.qml.config.js --mode production"
   },
   "repository": {
     "type": "git",
@@ -25,9 +25,6 @@
   },
   "homepage": "https://github.com/brizental/gleanjs#readme",
   "devDependencies": {
-    "@babel/core": "^7.11.6",
-    "@babel/preset-env": "^7.11.5",
-    "babel-loader": "^8.1.0",
     "crypto": "^1.0.1",
     "jest": "^26.4.2",
     "webpack": "^4.44.1",
@@ -35,7 +32,8 @@
   },
   "jest": {
     "moduleNameMapper": {
-      "^storage$": "../src/storage/mock.js"
+      "^storage$": "../src/storage/mock.js",
+      "^session$": "../src/storage/browser.js"
     }
   }
 }

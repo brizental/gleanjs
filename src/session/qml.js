@@ -2,8 +2,16 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-.import "../../dist/glean.js" as GleanInstance;
+const { UUIDv4 } = require('../utils');
 
-const Metrics = {
-    test: new GleanInstance.Glean._MetricTypes.EventMetricType("testcat", "click"),
-};
+class Session {
+    constructor() {
+        this._sessionId = UUIDv4();
+    }
+
+    id() {
+        return this._sessionId
+    }
+}
+
+module.exports = Session

@@ -7,8 +7,8 @@ const {
     SESSION_ID_KEY,
     UTM_CAMPAIGN_KEY,
     MAX_INACTIVITY_TIME,
-} = require("./constants");
-const { UUIDv4, throttle, getItemWithDefault, updateItemWithDefault } = require('./utils');
+} = require("../constants");
+const { UUIDv4, throttle, getItemWithDefault } = require('../utils');
 const { setItem, getItem } = require("storage");
 
 /**
@@ -50,9 +50,11 @@ class Session {
 
         // Everytime we get user activity the inactivity timeout is reset.
         // I am considering activity, any click or key press on the page.
-        document && document.addEventListener("click", () => this._setTimeoutToResetOnInactivity());
-        document && document.addEventListener("keypress", () => this._setTimeoutToResetOnInactivity());
-        window && window.addEventListener("scroll", throttle(() => this._setTimeoutToResetOnInactivity(), 1000));
+        if (typeof document !== "undefined") {
+            document.addEventListener("click", () => this._setTimeoutToResetOnInactivity());
+            document.addEventListener("keypress", () => this._setTimeoutToResetOnInactivity());
+            window.addEventListener("scroll", throttle(() => this._setTimeoutToResetOnInactivity(), 1000));
+        }
     }
 
     /**
@@ -80,12 +82,12 @@ class Session {
 
         const startNewSession = () => {
             this._startNewSession("midnight");
-            setTimeout(startNewSession, milliseconsUntilMidnight())
+            setTimeout && setTimeout(startNewSession, milliseconsUntilMidnight())
         };
 
         // Set a timeout to restart the session when we reach midnight.
         // This should never be cleared, we always want to re-start at midnight.
-        setTimeout(startNewSession, milliseconsUntilMidnight());
+        setTimeout && setTimeout(startNewSession, milliseconsUntilMidnight());
     }
 
     /**
@@ -102,11 +104,11 @@ class Session {
         const startNewSession = () => {
             this._startNewSession("inactivity");
             clearTimeout(this._resetOnInactivityTimeout);
-            this._resetOnInactivityTimeout = setTimeout(startNewSession, MAX_INACTIVITY_TIME);
+            this._resetOnInactivityTimeout = setTimeout && setTimeout(startNewSession, MAX_INACTIVITY_TIME);
         }
 
         this._resetOnInactivityTimeout && clearTimeout(this._resetOnInactivityTimeout);
-        this._resetOnInactivityTimeout = setTimeout(startNewSession, custom || MAX_INACTIVITY_TIME);
+        this._resetOnInactivityTimeout = setTimeout && setTimeout(startNewSession, custom || MAX_INACTIVITY_TIME);
     }
 
     /**

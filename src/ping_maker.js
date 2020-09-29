@@ -34,17 +34,18 @@ class PingMaker {
         this._deviceType = deviceType;
 
         const setMetricsThatRequireWindow = () => {
-            this._referrer = document && document.referrer;
-            this._pageTitle = document && document.title;
-            this._pagePath = window && window.location.pathname;
+            this._referrer = document.referrer;
+            this._pageTitle = document.title;
+            this._pagePath = window.location.pathname;
         }
-        window && window.addEventListener('load', setMetricsThatRequireWindow);
+        typeof window !== "undefined" &&
+        typeof document !== "undefined" && window.addEventListener('load', setMetricsThatRequireWindow);
 
         // Locale could actually change between pings,
         // but I think we can ignore that for now.
         try {
             this.locale = navigator.language;
-        } catch {
+        } catch(_) {
             this.locale = "und";
         }
     }
@@ -88,9 +89,10 @@ class PingMaker {
                 }
         }
 
-        if (document) {
+        if (typeof document !== "undefined") {
             baseMetrics["string"] = {
-                ...baseMetrics["string"],
+                "glean.platform.browser": this._browser,
+                "glean.platform.device_type": this._deviceType,
                 // These strings are all arbitrarily long
                 // and the Glean schema only accepts strings up to 100 characters.
                 "glean.page.referrer": this._referrer && this._referrer.slice(0, 100),
@@ -275,11 +277,19 @@ class PingMaker {
 
         // TODO: we should really have some "PlatformInfo" class that uses
         // UA when in a webpage and the WebExtentions APIs when in an addon.
-        const ua = navigator.userAgent.toLowerCase();
-        return {
-            os: _guessOS(ua),
-            browser: _guessBrowser(ua),
-            deviceType: _guessDeviceType(ua),
+        if (typeof navigator !== "undefined") {
+            const ua = navigator.userAgent.toLowerCase();
+            return {
+                os: _guessOS(ua),
+                browser: _guessBrowser(ua),
+                deviceType: _guessDeviceType(ua),
+            }
+        } else {
+            return {
+                os: "Unknown",
+                browser: "Qt",
+                deviceType: "Desktop",
+            }
         }
     }
 }
