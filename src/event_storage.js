@@ -51,6 +51,7 @@ class EventStorage {
      * @param {String} appId The app id where this instance of Glean is running
      */
     constructor(appId) {
+        console.log(Session)
         this._session = new Session(this._collectEvents);
         // Create an instance of the pingMaker to collect event when necessary.
         this._pingMaker = new PingMaker(appId);
