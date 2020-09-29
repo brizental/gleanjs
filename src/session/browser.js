@@ -2,13 +2,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-const {
+ const {
     SESSION_START_KEY,
     SESSION_ID_KEY,
     UTM_CAMPAIGN_KEY,
     MAX_INACTIVITY_TIME,
-} = require("../constants");
-const { UUIDv4, throttle, getItemWithDefault } = require('../utils');
+} = require("./constants");
+const { UUIDv4, throttle, getItemWithDefault } = require('./utils');
 const { setItem, getItem } = require("storage");
 
 /**
@@ -50,11 +50,9 @@ class Session {
 
         // Everytime we get user activity the inactivity timeout is reset.
         // I am considering activity, any click or key press on the page.
-        if (typeof document !== "undefined") {
-            document.addEventListener("click", () => this._setTimeoutToResetOnInactivity());
-            document.addEventListener("keypress", () => this._setTimeoutToResetOnInactivity());
-            window.addEventListener("scroll", throttle(() => this._setTimeoutToResetOnInactivity(), 1000));
-        }
+        document && document.addEventListener("click", () => this._setTimeoutToResetOnInactivity());
+        document && document.addEventListener("keypress", () => this._setTimeoutToResetOnInactivity());
+        window && window.addEventListener("scroll", throttle(() => this._setTimeoutToResetOnInactivity(), 1000));
     }
 
     /**
@@ -82,12 +80,12 @@ class Session {
 
         const startNewSession = () => {
             this._startNewSession("midnight");
-            setTimeout && setTimeout(startNewSession, milliseconsUntilMidnight())
+            setTimeout(startNewSession, milliseconsUntilMidnight())
         };
 
         // Set a timeout to restart the session when we reach midnight.
         // This should never be cleared, we always want to re-start at midnight.
-        setTimeout && setTimeout(startNewSession, milliseconsUntilMidnight());
+        setTimeout(startNewSession, milliseconsUntilMidnight());
     }
 
     /**
@@ -104,11 +102,11 @@ class Session {
         const startNewSession = () => {
             this._startNewSession("inactivity");
             clearTimeout(this._resetOnInactivityTimeout);
-            this._resetOnInactivityTimeout = setTimeout && setTimeout(startNewSession, MAX_INACTIVITY_TIME);
+            this._resetOnInactivityTimeout = setTimeout(startNewSession, MAX_INACTIVITY_TIME);
         }
 
         this._resetOnInactivityTimeout && clearTimeout(this._resetOnInactivityTimeout);
-        this._resetOnInactivityTimeout = setTimeout && setTimeout(startNewSession, custom || MAX_INACTIVITY_TIME);
+        this._resetOnInactivityTimeout = setTimeout(startNewSession, custom || MAX_INACTIVITY_TIME);
     }
 
     /**

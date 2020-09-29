@@ -10,6 +10,8 @@ module.exports = {
      filename: 'glean.js',
      path: path.resolve(__dirname, 'dist'),
      library: 'Glean',
+     // This config makes the Glean object a global `var`.
+     // See: https://webpack.js.org/guides/author-libraries/
      libraryTarget: 'var'
    },
    // Do not use `eval` for source maps in dev, so that the

@@ -82,7 +82,7 @@ class EventStorage {
             // succeeds in uploading the ping after the page in unloaded,
             // it never succeeds on deleting the ping that was uploaded (if it was successfully uploaded).
             // It also doesn't deal with upload errors.
-            typeof window !== "undefined" && window.addEventListener("beforeunload", collectEvents)
+            window.addEventListener("beforeunload", collectEvents)
         }
     }
 
