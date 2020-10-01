@@ -43,13 +43,13 @@ function upload(appId, pingId, payload) {
                 // Recorevable error case
                 default:
                     console.warn(`Recoverable error while submitting ping ${pingId}. Status: ${response.status}\n`, response.response);
-                    setTimeout && setTimeout(() => upload(appId, pingId, payload), RECOVERABLE_UPLOAD_ERROR_TIMEOUT);
+                    typeof setTimeout !== "undefined" && setTimeout(() => upload(appId, pingId, payload), RECOVERABLE_UPLOAD_ERROR_TIMEOUT);
             }
         })
         .catch(error => {
             // These are always recoverable since they are errors while trying to make the request.
             console.warn(`Recoverable error while submitting ping ${pingId}. Unable to perform request: ${JSON.stringify(error)}`);
-            setTimeout && setTimeout(() => upload(appId, pingId, payload), RECOVERABLE_UPLOAD_ERROR_TIMEOUT);
+            typeof setTimeout !== "undefined" && setTimeout(() => upload(appId, pingId, payload), RECOVERABLE_UPLOAD_ERROR_TIMEOUT);
         });
 }
 

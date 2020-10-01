@@ -51,7 +51,6 @@ class EventStorage {
      * @param {String} appId The app id where this instance of Glean is running
      */
     constructor(appId) {
-        console.log(Session)
         this._session = new Session(this._collectEvents);
         // Create an instance of the pingMaker to collect event when necessary.
         this._pingMaker = new PingMaker(appId);
@@ -83,7 +82,7 @@ class EventStorage {
             // succeeds in uploading the ping after the page in unloaded,
             // it never succeeds on deleting the ping that was uploaded (if it was successfully uploaded).
             // It also doesn't deal with upload errors.
-            window.addEventListener("beforeunload", collectEvents)
+            window.addEventListener("beforeunload", collectEvents);
         }
     }
 
