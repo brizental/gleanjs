@@ -2,11 +2,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-const glean = require("./glean");
+const Glean = require("./glean");
 const EventMetricType = require("./private/EventMetricType");
 
 module.exports = {
-    INSTANCE: glean,
+    Glean,
     _MetricTypes: {
         EventMetricType
     }

@@ -18,7 +18,7 @@ function upload(appId, pingId, payload) {
             "Date": (new Date()).toISOString(),
             "X-Client-Type": "Glean.JS",
             "X-Client-Version": "0.0.1",
-            "X-Debug-ID": "glinja-demo"
+            "X-Debug-ID": "glinja-svelte-sample"
         },
         body: JSON.stringify(payload),
         keepalive: true

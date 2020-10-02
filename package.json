@@ -6,10 +6,12 @@
   "main": "dist/glean.js",
   "scripts": {
     "test": "jest --no-watchman",
-    "build": "webpack --config webpack.browser.config.js --mode production",
-    "dev": "webpack --watch --config webpack.browser.config.js --mode development",
-    "dev.qml": "webpack --watch --config  webpack.qml.config.js --mode development",
-    "build.qml": "webpack --config webpack.qml.config.js --mode production"
+    "build": "webpack --config webpack.lib.config.js --mode production",
+    "dev": "webpack --watch --config webpack.lib.config.js --mode development",
+    "build.browser": "webpack --config webpack.browser.config.js --mode production",
+    "dev.browser": "webpack --watch --config webpack.browser.config.js --mode development",
+    "build.qml": "webpack --config webpack.qml.config.js --mode production",
+    "dev.qml": "webpack --watch --config webpack.qml.config.js --mode development"
   },
   "repository": {
     "type": "git",

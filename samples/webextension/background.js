@@ -1,3 +1,4 @@
+const _INSTANCE = new Glean.Glean();
 
 class SampleBackgroundScript {
   /**
@@ -5,7 +6,7 @@ class SampleBackgroundScript {
    **/
   async run() {
     console.log("SampleBackgroundScript - start");
-    let g = new Glean._MetricTypes.EventMetricType("extension", "startup");
+    let g = new Glean._MetricTypes.EventMetricType(_INSTANCE, "extension", "startup");
     g.record();
   }
 }
