@@ -70,6 +70,15 @@ class EventStorage {
             collectEvents()
         }
 
+        // The code inside this conditional will work for browser environments,
+        // these can be:
+        //  1. Electron apps
+        //  2. Web extensions
+        //  3. Web apps
+        // The are not:
+        //  1. CLI tools
+        //  2. Servers
+        //  3. QML apps
         if (typeof window !== "undefined") {
             // Set up an interval to send evenst periodically
             // TODO: Make sure using setInterval is not a terrible idea

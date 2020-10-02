@@ -20,7 +20,7 @@ module.exports = {
    resolve: {
      alias: {
        storage$: path.resolve(__dirname, 'src/storage/qml.js'),
-       session$: path.resolve(__dirname, 'src/session/qml.js')
+       session$: path.resolve(__dirname, 'src/session/noop.js')
      }
    }
 };

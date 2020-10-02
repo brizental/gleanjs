@@ -80,13 +80,16 @@ class PingMaker {
      */
     _buildMetricsSection(sessionId) {
         let baseMetrics =  {
-                uuid: {
-                    "glean.session.session_id": sessionId
-                },
                 string: {
                     "glean.platform.browser": this._browser,
                     "glean.platform.device_type": this._deviceType,
                 }
+        }
+
+        if (sessionId) {
+            baseMetrics["uuid"] = {
+                "glean.session.session_id": sessionId
+            }
         }
 
         if (typeof document !== "undefined") {
