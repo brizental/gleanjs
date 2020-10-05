@@ -4,6 +4,13 @@
 
 const DB_NAME = "Glean";
 
+// Initiallize I had created a QMLStorage class here,
+// that would create the table if it doesn't exist on init
+// and exposed the `getItem` and `setItem` API.
+//
+// For some reason, that generated QML errors, saying that `this` was undefined.
+// Those errors only happened on the `getItem` and `setItem` functions, I am not sure the cause.
+
 // Initialize the database ASAP.
 _executeQuery(`CREATE TABLE IF NOT EXISTS ${DB_NAME}(key TEXT, value TEXT);`);
 
