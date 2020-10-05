@@ -15,10 +15,7 @@
     <script>
       const { test } = require("./metrics");
       const btn = document.getElementById("record-something");
-      btn.addEventListener("click", () => {
-        console.log(test.record)
-        test.record()
-      });
+      btn.addEventListener("click", () => test.record());
     </script>
   </body>
 </html>

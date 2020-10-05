@@ -37,7 +37,7 @@ function upload(appId, pingId, payload) {
                     break;
                 // Unrecoverable error case
                 case response.status >= 400 && response.status < 500:
-                    console.error(`Unrecoverable error while submitting ping ${pingId}. Status: ${response.status}\n`, response.response);
+                    console.error(`Unrecoverable error while submitting ping ${pingId}. Status code: ${response.status}`);
                     _deletePersistedPing(pingId);
                     break;
                 // Recorevable error case
