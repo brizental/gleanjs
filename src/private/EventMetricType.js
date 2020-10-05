@@ -10,7 +10,7 @@ class EventMetricType {
     this.glean = glean;
   }
 
-  async record(extra) {
+  record(extra) {
     this.glean._eventStorage.record(Date.now(), this.category, this.name, extra);
   }
 }
