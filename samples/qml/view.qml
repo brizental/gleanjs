@@ -6,6 +6,9 @@ import QtQuick 2.0
 import QtQuick.Controls 2.0
 import QtQuick.LocalStorage 2.0
 
+// Even though GleanInstance will only be used inside metrics.js,
+// we need to import it here because otherwise glean.js doesn't
+// have access to LocalStorage.
 import "../../dist/glean.js" as GleanInstance;
 import "./metrics.js" as Glean;
 
