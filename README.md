@@ -1,6 +1,6 @@
 # Glean.js
 
-Pronounced (glinjas)
+Pronounced (gleanjas)
 
 # Installation
 

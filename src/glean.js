@@ -7,28 +7,33 @@
 const EventStorage = require('./event_storage');
 
 class Glean {
-  constructor() {
-    console.log("Initialize");
+  constructor(id, env) {
+    console.info("Initializing Glean.js...");
 
-    let appId = null;
+    let appId = id;
     // Chrome does not define the `browser` object. Instead, it defines
     // the `chrome` object.
     var browser =
-            (typeof browser !== "undefined") ? browser : (typeof chrome !== "undefined" ? chrome : null);
-    if (browser) {
+      (typeof browser !== "undefined") ? browser : (typeof chrome !== "undefined" ? chrome : null);
+
+    if (appId) {
+      env && console.log(`Running from ${env}`);
+    } else if (browser) {
       console.log("Running from a webextension");
-      appId = browser.runtime.id;
-    } else if (typeof document !== "undefined") {
+      appId = browser.runtime && browser.runtime.id;
+    } else {
       console.log("Running from a web page");
       let gleanScript = document.getElementById("glean-js");
       appId = gleanScript && gleanScript.getAttribute('app-id');
-    } else {
-      console.log("Running from QML!");
-      appId = "glean-js-qml";
+    }
+
+    if (!appId) {
+      console.error("Unable to initialize Glean.JS: no app id provided.");
+      return;
     }
 
     this._eventStorage = new EventStorage(appId);
   }
 }
 
-module.exports = new Glean();
+module.exports = Glean;

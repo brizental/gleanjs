@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Hello World!</title>
+    <!-- https://electronjs.org/docs/tutorial/security#csp-meta-tag -->
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';" />
+  </head>
+  <body>
+    <button
+      id="record-something"
+      style="display: inline-block; border: none; margin: 50px auto;">
+      Record something!
+    </button>
+    <script>
+      const { test } = require("./metrics");
+      const btn = document.getElementById("record-something");
+      btn.addEventListener("click", () => test.record());
+    </script>
+  </body>
+</html>

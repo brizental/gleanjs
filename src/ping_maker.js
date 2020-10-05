@@ -18,7 +18,7 @@ const { setItem } = require("storage");
  * A helper class to collect and send pings for uploading.
  */
 class PingMaker {
-    constructor(appId) {
+    constructor(appId, env) {
         this._appId = appId;
 
         // Upload outstanding pings from the last run
@@ -166,8 +166,8 @@ class PingMaker {
         // Attempt to fetch the addon version, if we're a
         // webextension.
         var browser =
-            (typeof browser !== "undefined") ? browser : (typeof chrome !== "undefined" ? chrome : null);
-        if (browser) {
+            (typeof browser !== "undefined") ? browser : (typeof chrome !== "undefined" ? chrome : {});
+        if (typeof browser.runtime !== "undefined" && typeof browser.runtime.getManifest !== undefined) {
             info.app_display_version = browser.runtime.getManifest().version;
         }
 

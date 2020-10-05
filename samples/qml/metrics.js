@@ -4,6 +4,7 @@
 
 .import "../../dist/glean.js" as GleanInstance;
 
+const Glean = new GleanInstance.Glean.Glean("qml-sample-app", "qml")
 const Metrics = {
-    test: new GleanInstance.Glean._MetricTypes.EventMetricType("testcat", "click"),
+    test: new GleanInstance.Glean._MetricTypes.EventMetricType(Glean, "testcat", "click"),
 };

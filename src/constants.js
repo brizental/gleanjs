@@ -69,7 +69,7 @@ module.exports = {
     /**
      * The telemetry endpoint to send data to.
      */
-    TELEMETRY_ENDPOINT: "https://cors-anywhere.herokuapp.com/https://incoming.telemetry.mozilla.org/",
+    TELEMETRY_ENDPOINT: "https://incoming.telemetry.mozilla.org/",
 
     /**
      * The amount of time to wait before retrying on a recoverable error.
