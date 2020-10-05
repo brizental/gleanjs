@@ -20,6 +20,7 @@ module.exports = {
   resolve: {
     alias: {
       storage$: path.resolve(__dirname, 'src/storage/browser.js'),
+      session$: path.resolve(__dirname, 'src/session/browser.js')
     }
   }
 };

@@ -4,8 +4,7 @@
 
 const { EVENT_STORAGE_KEY, MAX_EVENTS, EVENTS_PING_INTERVAL } = require("./constants");
 const PingMaker = require("./ping_maker");
-const Session = require("./session");
-
+const Session = require("session");
 const { setItem } = require("storage");
 const { getItemWithDefault } = require("./utils");
 
@@ -65,23 +64,35 @@ class EventStorage {
         const collectEvents = () => {
             this._collectEvents(this._session.id())
         };
-        // Set up an interval to send evenst periodically
-        // TODO: Make sure using setInterval is not a terrible idea
-        this._interval = setInterval(collectEvents, EVENTS_PING_INTERVAL);
 
         // If persisted events have reached limit, submit them
         if (this._events.length >= MAX_EVENTS) {
             collectEvents()
         }
 
-        // If the page unloads we want to collect any events
-        // in case the user never comes back to this page.
-        //
-        // TODO: even though this *usually* (focus on the usually, sometimes is doesn't)
-        // succeeds in uploading the ping after the page in unloaded,
-        // it never succeeds on deleting the ping that was uploaded (if it was successfully uploaded).
-        // It also doesn't deal with upload errors.
-        window && window.addEventListener("beforeunload", collectEvents)
+        // The code inside this conditional will work for browser environments,
+        // these can be:
+        //  1. Electron apps
+        //  2. Web extensions
+        //  3. Web apps
+        // The are not:
+        //  1. CLI tools
+        //  2. Servers
+        //  3. QML apps
+        if (typeof window !== "undefined") {
+            // Set up an interval to send evenst periodically
+            // TODO: Make sure using setInterval is not a terrible idea
+            this._interval = setInterval(collectEvents, EVENTS_PING_INTERVAL);
+
+            // If the page unloads we want to collect any events
+            // in case the user never comes back to this page.
+            //
+            // TODO: even though this *usually* (focus on the usually, sometimes is doesn't)
+            // succeeds in uploading the ping after the page in unloaded,
+            // it never succeeds on deleting the ping that was uploaded (if it was successfully uploaded).
+            // It also doesn't deal with upload errors.
+            window.addEventListener("beforeunload", collectEvents);
+        }
     }
 
     /**

@@ -9,7 +9,7 @@ const {
 } = require("./constants");
 const { transformItemWithDefault } = require("./utils");
 
-async function upload(appId, pingId, payload) {
+function upload(appId, pingId, payload) {
     const submissionUrl = `${TELEMETRY_ENDPOINT}submit/${appId}/events/1/${pingId}`;
     const request = {
         method: "POST",
@@ -21,14 +21,13 @@ async function upload(appId, pingId, payload) {
             "X-Debug-ID": "glinja-demo"
         },
         body: JSON.stringify(payload),
-        mode: "cors",
-        cache: "default",
         keepalive: true
     };
 
     console.info(`Sending a new ping! ${pingId}\n`, JSON.stringify(request, null , 2));
 
-    fetch(submissionUrl, request)
+    const f = typeof fetch !== "undefined" ? fetch : fetchPolyfill;
+    return f(submissionUrl, request)
         .then(response => {
             switch (true) {
                 // Success case
@@ -38,19 +37,19 @@ async function upload(appId, pingId, payload) {
                     break;
                 // Unrecoverable error case
                 case response.status >= 400 && response.status < 500:
-                    console.error(`Unrecoverable error while submitting ping ${pingId}. Status code: ${response.status}`);
+                    console.error(`Unrecoverable error while submitting ping ${pingId}. Status: ${response.status}\n`, response.response);
                     _deletePersistedPing(pingId);
                     break;
                 // Recorevable error case
                 default:
-                    console.warn(`Recoverable error while submitting ping ${pingId}. Status code: ${response.status}`);
-                    setTimeout(() => upload(appId, pingId, payload), RECOVERABLE_UPLOAD_ERROR_TIMEOUT);
+                    console.warn(`Recoverable error while submitting ping ${pingId}. Status: ${response.status}\n`, response.response);
+                    typeof setTimeout !== "undefined" && setTimeout(() => upload(appId, pingId, payload), RECOVERABLE_UPLOAD_ERROR_TIMEOUT);
             }
         })
         .catch(error => {
             // These are always recoverable since they are errors while trying to make the request.
-            console.warn(`Recoverable error while submitting ping ${pingId}. Unable to perform request: ${error}`);
-            setTimeout(() => upload(appId, pingId, payload), RECOVERABLE_UPLOAD_ERROR_TIMEOUT);
+            console.warn(`Recoverable error while submitting ping ${pingId}. Unable to perform request: ${JSON.stringify(error)}`);
+            typeof setTimeout !== "undefined" && setTimeout(() => upload(appId, pingId, payload), RECOVERABLE_UPLOAD_ERROR_TIMEOUT);
         });
 }
 
@@ -63,4 +62,21 @@ function _deletePersistedPing(pingId) {
     });
 }
 
-module.exports = upload
+function fetchPolyfill(url, request) {
+    return new Promise((resolve, reject) => {
+        const req = new XMLHttpRequest();
+
+        req.open('POST', url);
+        // Pipeline will reject if this header is not present.
+        req.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+        for (const header in request.headers) {
+            req.setRequestHeader(header, request.headers[header]);
+        }
+
+        req.onerror = () => reject(req);
+        req.onload = () => resolve(req);
+        req.send(request.body);
+    });
+}
+
+module.exports = upload;

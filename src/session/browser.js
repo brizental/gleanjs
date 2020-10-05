@@ -7,8 +7,8 @@ const {
     SESSION_ID_KEY,
     UTM_CAMPAIGN_KEY,
     MAX_INACTIVITY_TIME,
-} = require("./constants");
-const { UUIDv4, throttle, getItemWithDefault, updateItemWithDefault } = require('./utils');
+} = require("../constants");
+const { UUIDv4, throttle, getItemWithDefault } = require('../utils');
 const { setItem, getItem } = require("storage");
 
 /**

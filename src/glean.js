@@ -18,15 +18,13 @@ class Glean {
     if (browser) {
       console.log("Running from a webextension");
       appId = browser.runtime.id;
-    } else {
+    } else if (typeof document !== "undefined") {
       console.log("Running from a web page");
       let gleanScript = document.getElementById("glean-js");
       appId = gleanScript && gleanScript.getAttribute('app-id');
-    }
-
-    if (appId == null || appId.length == 0) {
-      console.error("Unable to initialize Glean.JS: no app id provided.");
-      return;
+    } else {
+      console.log("Running from QML!");
+      appId = "glean-js-qml";
     }
 
     this._eventStorage = new EventStorage(appId);

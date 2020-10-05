@@ -4,7 +4,7 @@
 
  const path = require('path');
 
- module.exports = {
+module.exports = {
    entry: './src/index.js',
    output: {
      filename: 'glean.js',
@@ -20,6 +20,7 @@
    resolve: {
      alias: {
        storage$: path.resolve(__dirname, 'src/storage/qml.js'),
+       session$: path.resolve(__dirname, 'src/session/noop.js')
      }
    }
- };
+};
