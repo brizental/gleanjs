@@ -18,7 +18,7 @@ const { setItem } = require("storage");
  * A helper class to collect and send pings for uploading.
  */
 class PingMaker {
-    constructor(appId, env) {
+    constructor(appId) {
         this._appId = appId;
 
         // Upload outstanding pings from the last run
@@ -46,7 +46,12 @@ class PingMaker {
         try {
             this.locale = navigator.language;
         } catch(_) {
-            this.locale = "und";
+            // See: https://doc.qt.io/qt-5/qml-qtqml-locale.html
+            if (typeof Qt !== "undefined") {
+                this.locale = Qt.locale().name;
+            } else {
+                this.locale = "und";
+            }
         }
     }
 
@@ -222,11 +227,64 @@ class PingMaker {
     }
 
     /**
-     * Best effort to try and get os, browser and device type from UserAgent string.
+     * Tries to get the platform info,
+     * decides the best way to do that for the current platform.
      *
      * @returns {Object} And object holding the guessed os, browser and device types.
      */
     _getPlatformInfo() {
+        if (typeof Qt !== "undefined") {
+            return this._getPlatformInfoQML();
+        } else {
+            return this._getPlatformInfoBrowser();
+        }
+    }
+
+    /**
+     * Best effort to try and get os from the QtQML object.
+     * Browser is not applicable here and is always hardcoded to "QML".
+     * See: https://doc.qt.io/qt-5/qml-qtqml-qt.html
+     *
+     * This is only available when running from a QML app.
+     *
+     * @returns {Object} And object holding the guessed os, browser and device types.
+     */
+    _getPlatformInfoQML() {
+        // Try to be consistent with the naming used when in a browser env,
+        // by capitalizing the first letter of the OS names provided by QML.
+        // The possible values for OS here are listed at https://doc.qt.io/qt-5/qml-qtqml-qt.html#platform-prop
+        function _guessOS() {
+            const os = Qt.platform.os;
+            if (os === "windows") {
+                return "Windows";
+            } else if (os === "osx") {
+                return "MacOS";
+            } else if (os === "linux") {
+                return "Linux";
+            } else if (os === "ios") {
+                return "iOS";
+            } else if (os === "android") {
+                return "Android";
+            }
+
+            return "Unknown";
+        }
+
+        return {
+            os: _guessOS(),
+            browser: "QML",
+            // We could maybe guess the device type by the screen width,
+            // but let's leave it hardcoded as Desktop for now.
+            deviceType: "Desktop",
+        }
+    }
+
+    /**
+     * Best effort to try and get os, browser and device type from UserAgent string.
+     *
+     * @returns {Object} And object holding the guessed os, browser and device types.
+     */
+    _getPlatformInfoBrowser() {
         function _guessOS(ua) {
             if (ua.indexOf("win") != -1) {
                 return "Windows";
@@ -268,10 +326,10 @@ class PingMaker {
 
             if (ua.indexOf("android") != -1) {
                 if (ua.indexOf("mobi") != -1) {
-                return "Mobile";
+                    return "Mobile";
                 } else {
-                // If it's Android and is not a phone, it's probably a tablet.
-                return "Tablet";
+                    // If it's Android and is not a phone, it's probably a tablet.
+                    return "Tablet";
                 }
             }
 
@@ -290,8 +348,8 @@ class PingMaker {
         } else {
             return {
                 os: "Unknown",
-                browser: "Qt",
-                deviceType: "Desktop",
+                browser: "Unknown",
+                deviceType: "Unknown",
             }
         }
     }
