@@ -1,13 +1,15 @@
 {
   "name": "glean",
   "version": "0.0.1",
-  "description": "Pronounced (glinjas)",
+  "description": "Pronounced (gleanjas)",
   "private": true,
-  "main": "dist/glean.js",
+  "main": "./dist/glean.js",
   "scripts": {
     "test": "jest --no-watchman",
     "build": "webpack --config webpack.lib.config.js --mode production",
     "dev": "webpack --watch --config webpack.lib.config.js --mode development",
+    "build.node": "webpack --config webpack.node.config.js --mode production",
+    "dev.node": "webpack --watch --config webpack.node.config.js --mode development",
     "build.browser": "webpack --config webpack.browser.config.js --mode production",
     "dev.browser": "webpack --watch --config webpack.browser.config.js --mode development",
     "build.qml": "webpack --config webpack.qml.config.js --mode production",
@@ -30,13 +32,17 @@
     "@babel/core": "^7.11.6",
     "crypto": "^1.0.1",
     "jest": "^26.4.2",
+    "native-ext-loader": "^2.3.0",
     "webpack": "^4.44.1",
     "webpack-cli": "^3.3.12"
   },
+  "dependencies": {
+    "level": "^6.0.1"
+  },
   "jest": {
     "moduleNameMapper": {
-      "^storage$": "<rootDir>/src/storage/mock.js",
-      "^session$": "<rootDir>/src/session/browser.js"
+      "^./storage$": "<rootDir>/src/storage/mock.js",
+      "^./session$": "<rootDir>/src/session/browser.js"
     }
   }
 }

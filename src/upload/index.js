@@ -2,32 +2,49 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-const {
+ const {
     TELEMETRY_ENDPOINT,
     PENDING_PINGS_STORAGE_KEY,
     RECOVERABLE_UPLOAD_ERROR_TIMEOUT
-} = require("./constants");
-const { transformItemWithDefault } = require("./utils");
+} = require("../constants");
+const { transformItemWithDefault } = require("../utils");
+
+// The issue with this approach is that webpack wil bundle all of these even if they are not used.
+let _fetch;
+//  `fetch` will be available is most modern browsers.
+if (typeof fetch === "function") {
+    _fetch = fetch;
+// `XMLHttpRequest` will be available is older browsers and Qt/QML apps.
+} else if (typeof XMLHttpRequest === "function") {
+    _fetch = require("./adapters/xhr");
+// `process` is available on the Node.js environment.
+// TODO: make sure this check is reliable, it's copied from axios: https://github.com/axios/axios/blob/master/lib/defaults.js#L21
+} else if (typeof process !== 'undefined' && Object.prototype.toString.call(process) === '[object process]') {
+    _fetch = require("./adapters/http")
+} else {
+    throw Error("Unable to start Glean.js in the current environment. No known uploaders.")
+}
 
 function upload(appId, pingId, payload) {
     const submissionUrl = `${TELEMETRY_ENDPOINT}submit/${appId}/events/1/${pingId}`;
+    const body = JSON.stringify(payload);
     const request = {
         method: "POST",
         headers: {
             "Content-Type": "application/json; charset=utf-8",
+            "Content-Length": body.length,
             "Date": (new Date()).toISOString(),
-            "X-Client-Type": "Glean.JS",
+            "X-Client-Type": "Glean.js",
             "X-Client-Version": "0.0.1",
-            "X-Debug-ID": "glinja-svelte-sample"
+            // "X-Debug-ID": "gleanjs-server-sample"
         },
-        body: JSON.stringify(payload),
+        body,
         keepalive: true
     };
 
     console.info(`Sending a new ping! ${pingId}\n`, JSON.stringify(request, null , 2));
 
-    const f = typeof fetch !== "undefined" ? fetch : fetchPolyfill;
-    return f(submissionUrl, request)
+    return _fetch(submissionUrl, request)
         .then(response => {
             switch (true) {
                 // Success case
@@ -42,7 +59,7 @@ function upload(appId, pingId, payload) {
                     break;
                 // Recorevable error case
                 default:
-                    console.warn(`Recoverable error while submitting ping ${pingId}. Status: ${response.status}\n`, response.response);
+                    console.warn(`Recoverable error while submitting ping ${pingId}. Status: ${response.status}\n`, response);
                     typeof setTimeout !== "undefined" && setTimeout(() => upload(appId, pingId, payload), RECOVERABLE_UPLOAD_ERROR_TIMEOUT);
             }
         })
@@ -59,23 +76,6 @@ function _deletePersistedPing(pingId) {
         let pings = JSON.parse(value);
         delete pings[pingId];
         return JSON.stringify(pings);
-    });
-}
-
-function fetchPolyfill(url, request) {
-    return new Promise((resolve, reject) => {
-        const req = new XMLHttpRequest();
-
-        req.open('POST', url);
-        // Pipeline will reject if this header is not present.
-        req.setRequestHeader("X-Requested-With", "XMLHttpRequest");
-        for (const header in request.headers) {
-            req.setRequestHeader(header, request.headers[header]);
-        }
-
-        req.onerror = () => reject(req);
-        req.onload = () => resolve(req);
-        req.send(request.body);
     });
 }
 
