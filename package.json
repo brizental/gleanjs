@@ -41,8 +41,8 @@
   },
   "jest": {
     "moduleNameMapper": {
-      "^./storage$": "<rootDir>/src/storage/mock.js",
-      "^./session$": "<rootDir>/src/session/browser.js"
+      "^storage$": "<rootDir>/src/storage/mock.js",
+      "^session$": "<rootDir>/src/session/browser.js"
     }
   }
 }

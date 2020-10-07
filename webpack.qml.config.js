@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 const path = require("path");
+const webpack = require("webpack");
 
 module.exports = {
   entry: "./src/index.js",
@@ -14,6 +15,10 @@ module.exports = {
     // See: https://webpack.js.org/guides/author-libraries/
     libraryTarget: "var",
   },
+  plugins: [
+    // Ignore the http adapter that is only necessary for Node.js
+    new webpack.IgnorePlugin(/\.\/adapters\/http/),
+  ],
   // Do not use `eval` for source maps in dev, so that the
   // generated output could be used.
   devtool: "source-map",
