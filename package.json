@@ -42,7 +42,8 @@
   "jest": {
     "moduleNameMapper": {
       "^storage$": "<rootDir>/src/storage/mock.js",
-      "^session$": "<rootDir>/src/session/browser.js"
+      "^session$": "<rootDir>/src/session/browser.js",
+      "^platform$": "<rootDir>/src/ping_maker/platform/browser.js"
     }
   }
 }
