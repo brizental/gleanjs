@@ -1,0 +1,15 @@
+{
+  "name": "server-sample",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "author": "The Glean Team <glean-team@mozilla.com>",
+  "license": "MPL-2.0",
+  "dependencies": {
+    "express": "^4.17.1",
+    "glean": "file://../../"
+  }
+}

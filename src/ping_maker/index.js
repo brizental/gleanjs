@@ -9,10 +9,11 @@ const {
     SEQUENCE_NUMBER_STORAGE_KEY,
     LAST_SENT_DATE_KEY,
     TELEMETRY_SDK_BUILD,
-} = require("./constants");
-const upload = require("./upload");
-const { UUIDv4, transformItemWithDefault, getItemWithDefault } = require("./utils");
+} = require("../constants");
+const upload = require("../upload");
+const { UUIDv4, transformItemWithDefault, getItemWithDefault } = require("../utils");
 const { setItem } = require("storage");
+const getPlatformInfo = require("platform");
 
 /**
  * A helper class to collect and send pings for uploading.
@@ -28,31 +29,21 @@ class PingMaker {
         this._clientId = this._getClientId();
         this._firstRunDate = this._getFirstRunDate();
 
-        const { os, browser, deviceType } = this._getPlatformInfo();
+        const { os, browser, deviceType, architecture, locale } = getPlatformInfo();
         this._os = os;
         this._browser = browser;
         this._deviceType = deviceType;
+        this._architecture = architecture;
+        this._locale = locale;
+
 
         const setMetricsThatRequireWindow = () => {
             this._referrer = document.referrer;
             this._pageTitle = document.title;
             this._pagePath = window.location.pathname;
         }
-        typeof window !== "undefined" &&
-        typeof document !== "undefined" && window.addEventListener('load', setMetricsThatRequireWindow);
-
-        // Locale could actually change between pings,
-        // but I think we can ignore that for now.
-        try {
-            this.locale = navigator.language;
-        } catch(_) {
-            // See: https://doc.qt.io/qt-5/qml-qtqml-locale.html
-            if (typeof Qt !== "undefined") {
-                this.locale = Qt.locale().name;
-            } else {
-                this.locale = "und";
-            }
-        }
+        typeof document !== "undefined" &&
+            window.addEventListener('load', setMetricsThatRequireWindow);
     }
 
     /**
@@ -165,7 +156,7 @@ class PingMaker {
             os: this._os,
             os_version: "Unknown",
             telemetry_sdk_build: TELEMETRY_SDK_BUILD,
-            locale: this.locale
+            locale: this._locale
         };
 
         // Attempt to fetch the addon version, if we're a
@@ -203,7 +194,7 @@ class PingMaker {
      * @returns {Number} The next sequence number.
     */
     _getNextSequenceNumber() {
-        return transformItemWithDefault(SEQUENCE_NUMBER_STORAGE_KEY, 1, value => {
+        return transformItemWithDefault(SEQUENCE_NUMBER_STORAGE_KEY, 0, value => {
             const lastSeqNumber = parseInt(value);
             if (isNaN(lastSeqNumber)) throw "Stored sequence number is not a number!"
             return lastSeqNumber + 1
@@ -223,134 +214,6 @@ class PingMaker {
         return {
             startTime,
             endTime,
-        }
-    }
-
-    /**
-     * Tries to get the platform info,
-     * decides the best way to do that for the current platform.
-     *
-     * @returns {Object} And object holding the guessed os, browser and device types.
-     */
-    _getPlatformInfo() {
-        if (typeof Qt !== "undefined") {
-            return this._getPlatformInfoQML();
-        } else {
-            return this._getPlatformInfoBrowser();
-        }
-    }
-
-    /**
-     * Best effort to try and get os from the QtQML object.
-     * Browser is not applicable here and is always hardcoded to "QML".
-     * See: https://doc.qt.io/qt-5/qml-qtqml-qt.html
-     *
-     * This is only available when running from a QML app.
-     *
-     * @returns {Object} And object holding the guessed os, browser and device types.
-     */
-    _getPlatformInfoQML() {
-        // Try to be consistent with the naming used when in a browser env,
-        // by capitalizing the first letter of the OS names provided by QML.
-        // The possible values for OS here are listed at https://doc.qt.io/qt-5/qml-qtqml-qt.html#platform-prop
-        function _guessOS() {
-            const os = Qt.platform.os;
-            if (os === "windows") {
-                return "Windows";
-            } else if (os === "osx") {
-                return "MacOS";
-            } else if (os === "linux") {
-                return "Linux";
-            } else if (os === "ios") {
-                return "iOS";
-            } else if (os === "android") {
-                return "Android";
-            }
-
-            return "Unknown";
-        }
-
-        return {
-            os: _guessOS(),
-            browser: "QML",
-            // We could maybe guess the device type by the screen width,
-            // but let's leave it hardcoded as Desktop for now.
-            deviceType: "Desktop",
-        }
-    }
-
-    /**
-     * Best effort to try and get os, browser and device type from UserAgent string.
-     *
-     * @returns {Object} And object holding the guessed os, browser and device types.
-     */
-    _getPlatformInfoBrowser() {
-        function _guessOS(ua) {
-            if (ua.indexOf("win") != -1) {
-                return "Windows";
-            } else if (ua.indexOf("mac") != -1) {
-                return "MacOS";
-            } else if (ua.indexOf("linux") != -1 ) {
-                return "Linux";
-            } else if (ua.indexOf("ios") != -1) {
-                return "iOS";
-            } else if (ua.indexOf("android") != -1) {
-                return "Android";
-            }
-
-            return "Unknown";
-        }
-
-        function _guessBrowser(ua) {
-            if (ua.indexOf("firefox") != -1) {
-                return "Firefox";
-            } else if (ua.indexOf("opera") != -1) {
-                return "Opera";
-            } else if (ua.indexOf("chrome") != -1 ) {
-                return "Chrome";
-            } else if (ua.indexOf("safari") != -1) {
-                return "Safari";
-            } else if (ua.indexOf("edge") != -1) {
-                return "Edge";
-            } else if (ua.indexOf("ie") != -1) {
-                return "IE";
-            }
-
-            return "Unknown";
-        }
-
-        function _guessDeviceType(ua) {
-            if (ua.indexOf("tablet") != -1) {
-                return "Tablet";
-            }
-
-            if (ua.indexOf("android") != -1) {
-                if (ua.indexOf("mobi") != -1) {
-                    return "Mobile";
-                } else {
-                    // If it's Android and is not a phone, it's probably a tablet.
-                    return "Tablet";
-                }
-            }
-
-            return "Desktop";
-        }
-
-        // TODO: we should really have some "PlatformInfo" class that uses
-        // UA when in a webpage and the WebExtentions APIs when in an addon.
-        if (typeof navigator !== "undefined") {
-            const ua = navigator.userAgent.toLowerCase();
-            return {
-                os: _guessOS(ua),
-                browser: _guessBrowser(ua),
-                deviceType: _guessDeviceType(ua),
-            }
-        } else {
-            return {
-                os: "Unknown",
-                browser: "Unknown",
-                deviceType: "Unknown",
-            }
         }
     }
 }

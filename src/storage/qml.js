@@ -4,47 +4,42 @@
 
 const DB_NAME = "Glean";
 
-// Initiallize I had created a QMLStorage class here,
-// that would create the table if it doesn't exist on init
-// and exposed the `getItem` and `setItem` API.
-//
-// For some reason, that generated QML errors, saying that `this` was undefined.
-// Those errors only happened on the `getItem` and `setItem` functions, I am not sure the cause.
+class Store {
+    constructor() {
+        // Initialize the database.
+        this._executeQuery(`CREATE TABLE IF NOT EXISTS ${DB_NAME}(key TEXT, value TEXT);`);
 
-// Initialize the database ASAP.
-_executeQuery(`CREATE TABLE IF NOT EXISTS ${DB_NAME}(key TEXT, value TEXT);`);
+        // For debugging purposes: clear the db on init.
+        // _executeQuery(`DELETE FROM ${DB_NAME};`);
 
-// For debugging purposes: clear the db on init.
-// _executeQuery(`DELETE FROM ${DB_NAME};`);
-
-// This allows for `REPLACE ITEM` to work.
-// See: https://www.sqlitetutorial.net/sqlite-replace-statement/
-_executeQuery(`CREATE UNIQUE INDEX IF NOT EXISTS idx ON ${DB_NAME}(key);`)
-
-function _getDbHandle() {
-    return LocalStorage.openDatabaseSync(DB_NAME, "1.0", `${DB_NAME} Storage`, 1000000);
-}
-
-function _executeQuery(query) {
-    const handle = _getDbHandle();
-    console.info(`Attempting to execute query: ${query}`);
-
-    let rs;
-    try {
-        handle.transaction(tx => {
-            rs = tx.executeSql(query);
-        })
-    } catch (err) {
-        console.error(`Error executing query! ${err}`);
+        // This allows for `REPLACE ITEM` to work.
+        // See: https://www.sqlitetutorial.net/sqlite-replace-statement/
+        this._executeQuery(`CREATE UNIQUE INDEX IF NOT EXISTS idx ON ${DB_NAME}(key);`)
     }
 
-    return rs;
-}
+    _getDbHandle() {
+        return LocalStorage.openDatabaseSync(DB_NAME, "1.0", `${DB_NAME} Storage`, 1000000);
+    }
 
-module.exports = {
+    _executeQuery(query) {
+        const handle = this._getDbHandle();
+        console.info(`Attempting to execute query: ${query}`);
+    
+        let rs;
+        try {
+            handle.transaction(tx => {
+                rs = tx.executeSql(query);
+            })
+        } catch (err) {
+            console.error(`Error executing query! ${err}`);
+        }
+
+        return rs;
+    }
+
     getItem(key) {
         let result;
-        const rs = _executeQuery(`SELECT key, value FROM ${DB_NAME} WHERE key='${key}';`);
+        const rs = this._executeQuery(`SELECT key, value FROM ${DB_NAME} WHERE key='${key}';`);
         if (rs.rows.length === 0) {
             result = null;
         } else if (rs.rows.length > 1) {
@@ -58,9 +53,24 @@ module.exports = {
         }
 
         return result;
+    }
+
+    setItem(key, value) {
+        this._executeQuery(`REPLACE INTO ${DB_NAME}(key, value) VALUES('${key}', '${value}');`);
+    }
+
+}
+
+// Store Singleton!
+const StoreInstance = new Store();
+
+module.exports = {
+    getItem(key) {
+        return StoreInstance.getItem(key);
     },
 
     setItem(key, value) {
-        _executeQuery(`REPLACE INTO ${DB_NAME}(key, value) VALUES('${key}', '${value}');`);
+        StoreInstance.setItem(key, value);
     }
 };
+

@@ -105,3 +105,6 @@ dist
 
 # PYTHON STUFF
 venv/
+
+# The server database
+samples/server/Glean/
