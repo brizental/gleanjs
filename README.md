@@ -1,3 +1,9 @@
+⚠️ **WARNING** ⚠️
+
+This project is a proof-of-concept. It's only purpose was to help the Glean team understand all the constraints and caveats of building an implementation of Glean that works on Javascript environments. The code here is ugly, untested and experimental. **DO NOT USE IT IN PRODUCTION**.
+
+⚠️ **WARNING** ⚠️
+
 # Glean.js
 
 Pronounced (gleanjas)
